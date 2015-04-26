@@ -10,7 +10,6 @@ case class Category(id: Option[Long], name: JsValue)
 
 class Categories(tag: Tag) extends Table[Category](tag, "CATEGORIES") {
   def id = column[Long]("ID", O.PrimaryKey, O.AutoInc)
-
   def name = column[JsValue]("NAME")
 
   def * = (id.?, name) <>(Category.tupled, Category.unapply)
@@ -24,4 +23,6 @@ object Categories {
   def count: Future[Int] = db.run(categories.length.result)
 
   def insert(category: Category): Future[Int] = db.run(categories += category)
+
+  def all: Future[Seq[Category]] = db.run(categories.result)
 }

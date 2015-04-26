@@ -1,7 +1,5 @@
-@(message: String)
+@(message: String, categories: Seq[Category], locales: Seq[Locale])(implicit request: controllers.LocalizedRequest)
 
-@main("Welcome to Play") {
-
-    @play20.welcome(message)
+@main("Welcome to Play", categories, locales) {
 
 }
