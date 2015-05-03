@@ -1,6 +1,6 @@
 package shared
 
-import PGDriver.api._
+import shared.PGDriver.api._
 
 object DAO {
   var db: Database = null

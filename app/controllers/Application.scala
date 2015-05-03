@@ -2,6 +2,7 @@ package controllers
 
 import controllers.Actions._
 import models._
+import models.enums._
 import play.api.Play.current
 import play.api.i18n._
 import play.api.mvc._
@@ -11,15 +12,26 @@ import scala.concurrent._
 
 
 object Application extends Controller {
-  def index(lang: String) = LocalizedAsyncAction(lang) { implicit request =>
+  def index(lang: String, page: Int) = LocalizedAsyncAction(lang) { implicit request =>
     for {
-      locales <- Locales.all
-      categories <- Categories.all
-    } yield Ok(views.html.index("a", categories, locales))
+      posts <- Posts.listByPage(if (page < 0) 1 else page)
+      postCount <- Posts.count
+    } yield Ok(views.html.index(posts, page, postCount))
   }
 
-  def page(lang: String, slug: String) = LocalizedAction(lang) { implicit request =>
-    Ok("hi")
+  def post(lang: String, slug: String) = LocalizedAsyncAction(lang) { implicit request =>
+    val post = for {
+      post <- Posts.getBySlug(slug) if post.postType == PostType.Post && post.status == PostStatus.Published
+      tags <- PostTags.getBySlugs(post.tags)
+    } yield Ok(views.html.post(post, tags))
+    post.recover { case _ => NotFound(views.html.notFound()) }
+  }
+
+  def page(lang: String, slug: String) = LocalizedAsyncAction(lang) { implicit request =>
+    val post = for {
+      post <- Posts.getBySlug(slug) if post.postType == PostType.Page && post.status == PostStatus.Published
+    } yield Ok(views.html.page(post))
+    post.recover { case _ => NotFound(views.html.notFound()) }
   }
 
   def chooseLanguage = Action.async { implicit request =>

@@ -1,14 +1,10 @@
 package controllers
 
-import play.api.Play._
-import play.api.i18n.Messages.Implicits._
-import play.api.i18n._
 import play.api.mvc._
 
 import scala.concurrent.Future
 
-case class LocalizedRequest(lang: String,
-                            request: Request[AnyContent])
+case class LocalizedRequest(lang: String, request: Request[AnyContent])
   extends WrappedRequest(request)
 
 
@@ -24,10 +20,6 @@ object Actions {
     Action.async { request =>
       f(LocalizedRequest(lang, request))
     }
-  }
-
-  object Implicits {
-    implicit def localizedRequest2Messages(implicit request: LocalizedRequest): Messages = applicationMessages(Lang(request.lang), current)
   }
 
 }

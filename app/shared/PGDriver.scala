@@ -1,16 +1,23 @@
 package shared
 
-import slick.driver.PostgresDriver
 import com.github.tminglei.slickpg._
+import models.enums._
+import slick.driver.PostgresDriver
 
 object PGDriver extends PostgresDriver
-                   with PgPlayJsonSupport
-                   with array.PgArrayJdbcTypes {
-  override val pgjson = "jsonb"
+                   with PgArraySupport
+                   with PgDate2Support
+                   with PgHStoreSupport
+                   with PgEnumSupport {
 
-  override val api = new API with JsonImplicits {
-    implicit val strListTypeMapper = new SimpleArrayJdbcType[String]("text").to(_.toList)
+  override val api = new API with DateTimeImplicits
+                             with HStoreImplicits
+                             with ArrayImplicits
+                             with EnumImplicits {}
+
+  trait EnumImplicits {
+    implicit val postStatusTypeMapper = createEnumJdbcType("PostStatus", PostStatus)
+    implicit val postTypeTypeMapper = createEnumJdbcType("PostType", PostType)
   }
 
-  val plainAPI = new API with PlayJsonPlainImplicits
 }

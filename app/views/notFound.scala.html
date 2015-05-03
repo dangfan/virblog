@@ -1,0 +1,25 @@
+@()(implicit request: controllers.LocalizedRequest)
+@import controllers.Implicits._
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>@Messages("404.title")</title>
+        <link href="@routes.Assets.at("stylesheets/404.css")" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="header">
+                <div class="logo">
+                    <h1><a href="@routes.Application.index(request.lang)">@Messages("404.oops")</a></h1>
+                </div>
+            </div>
+            <div class="content">
+                <img src="@routes.Assets.at("images/error-img.png")" title="error" />
+                <p>@Messages("404.content")</p>
+                <a href="@routes.Application.index(request.lang)">@Messages("404.home")</a>
+            </div>
+        </div>
+    </body>
+</html>
+

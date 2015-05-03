@@ -2,7 +2,8 @@
 
 # Home page
 GET        /                         controllers.Application.chooseLanguage
-GET        /:lang/                   controllers.Application.index(lang: String)
+GET        /:lang/                   controllers.Application.index(lang: String, page: Int ?= 1)
+GET        /:lang/posts/:slug        controllers.Application.post(lang: String, slug: String)
 GET        /:lang/pages/:slug        controllers.Application.page(lang: String, slug: String)
 
 # Map static resources from the /public folder to the /assets URL path

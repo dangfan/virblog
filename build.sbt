@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   specs2 % Test,
-  "com.typesafe.slick"  %% "slick"          % "3.0.0-RC3",
+  "com.typesafe.slick"  %% "slick"          % "3.0.0",
   "org.slf4j"            % "slf4j-nop"      % "1.7.10",
   "org.postgresql"       % "postgresql"     % "9.4-1201-jdbc41",
   "com.zaxxer"           % "HikariCP"       % "2.3.6",

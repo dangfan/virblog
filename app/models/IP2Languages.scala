@@ -25,7 +25,7 @@ class Country2Languages(tag: Tag) extends Table[(String, String, String)](tag, "
 object IP2Languages {
   private val ip2Countries = TableQuery[IP2Countries]
   private val country2Languages = TableQuery[Country2Languages]
-  val db = DAO.db
+  private val db = DAO.db
 
   def ipToDecimal(ip: String): BigDecimal = {
     val ia = InetAddress.getByName(ip)

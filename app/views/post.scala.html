@@ -1,0 +1,19 @@
+@(post: Post, tags: Seq[PostTag])(implicit request: controllers.LocalizedRequest)
+@import controllers.Implicits._
+
+@main(Options.blogName.localize) {
+    <div class="post-heading">
+        <h1>@post.title.localize</h1>
+        <h2 class="subheading">@post.subtitle.localize</h2>
+        <span class="meta">@Messages("time", post.time.localize) /
+            @for((tag, index) <- tags.zipWithIndex) {
+                @if(index != 0) {, }
+                <a href="/">@tag.name.localize</a>
+            }
+        </span>
+    </div>
+} {
+    <article>
+    @post.content.localize
+    </article>
+}

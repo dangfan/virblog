@@ -2,4 +2,14 @@ nav.home = Home
 nav.about = About
 nav.language = Language
 
+time = Posted on {0}
+
+404.title = Page Not Found
+404.oops = Oops
+404.content = You requested the page that is no longer There.
+404.home = Back To Home
+
+pagination.prev = Newer Posts
+pagination.next = Older Posts
+
 main.copyright = Copyright © 2012 - 2015 DANG Fan

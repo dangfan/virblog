@@ -1,5 +1,40 @@
-@(message: String, categories: Seq[Category], locales: Seq[Locale])(implicit request: controllers.LocalizedRequest)
+@(posts: Seq[Post], pageNumber: Int, postCount: Int)(implicit request: controllers.LocalizedRequest)
+@import controllers.Implicits._
 
-@main("Welcome to Play", categories, locales) {
-
+@main(Options.blogName.localize) {
+    <div class="site-heading">
+        <h1>@Options.blogName.localize</h1>
+        <hr class="small">
+        <span class="subheading">@Options.blogDescription.localize</span>
+    </div>
+} {
+    @for((post, index) <- posts.zipWithIndex) {
+        @if(index != 0) {
+            <hr>
+        }
+        <div class="post-preview">
+            <a href="posts/@post.slug">
+                <h2 class="post-title">@post.title.localize</h2>
+                <h3 class="post-subtitle">@post.subtitle.localize</h3>
+            </a>
+            <p class="post-meta">@Messages("time", post.time.localize)</p>
+            <article>@post.excerpt.localize</article>
+        </div>
+    }
+    <ul class="pager">
+        @if(pageNumber > 1) {
+            <li class="prev">
+                <a href="?page=@{
+                    pageNumber - 1
+                }">@Messages("pagination.prev") &larr;</a>
+            </li>
+        }
+        @if(postCount > pageNumber * Options.pageSize) {
+            <li class="next">
+                <a href="?page=@{
+                    pageNumber - 1
+                }">@Messages("pagination.next") &rarr;</a>
+            </li>
+        }
+    </ul>
 }

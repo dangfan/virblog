@@ -1,5 +1,3 @@
-import java.net._
-
 import models.IP2Languages
 import play.api.test._
 

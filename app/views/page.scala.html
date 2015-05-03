@@ -1,0 +1,13 @@
+@(post: Post)(implicit request: controllers.LocalizedRequest)
+@import controllers.Implicits._
+
+@main(Options.blogName.localize) {
+    <div class="post-heading">
+        <h1>@post.title.localize</h1>
+        <h2 class="subheading">@post.subtitle.localize</h2>
+    </div>
+} {
+    <article>
+    @post.content.localize
+    </article>
+}
