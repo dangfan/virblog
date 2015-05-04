@@ -4,6 +4,8 @@ nav.language = Language
 
 time = Posted on {0}
 
+tag = Tag:
+
 404.title = Page Not Found
 404.oops = Oops
 404.content = You requested the page that is no longer There.

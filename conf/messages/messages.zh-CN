@@ -4,6 +4,8 @@ nav.language = 语言
 
 time = 发布于{0}
 
+tag = 标签：
+
 404.title = 找不到该页
 404.oops = 哦！不！
 404.content = 您访问的页面并不存在

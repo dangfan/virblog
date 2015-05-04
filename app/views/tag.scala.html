@@ -1,11 +1,11 @@
-@(posts: Seq[Post], pageNumber: Int, postCount: Int)(implicit request: controllers.LocalizedRequest)
+@(tag: PostTag, posts: Seq[Post], pageNumber: Int, postCount: Int)(implicit request: controllers.LocalizedRequest)
 @import controllers.Implicits._
 
 @main(Options.blogName.localize) {
     <div class="site-heading">
         <h1>@Options.blogName.localize</h1>
         <hr class="small">
-        <span class="subheading">@Options.blogDescription.localize</span>
+        <span class="subheading">@Messages("tag") @tag.name.localize</span>
     </div>
 } {
     @for((post, index) <- posts.zipWithIndex) {

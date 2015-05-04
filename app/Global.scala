@@ -1,9 +1,9 @@
+import controllers.LocalizedRequest
 import models._
 import play.api._
 import play.api.mvc.Results._
 import play.api.mvc._
 import shared.DAO
-import controllers.LocalizedRequest
 import slick.jdbc.JdbcBackend.Database
 
 import scala.concurrent.ExecutionContext.Implicits.global

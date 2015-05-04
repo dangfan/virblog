@@ -25,7 +25,7 @@ object Options {
   private var privatePageSize: Int = 10
 
 
-  def load()(implicit ec: ExecutionContext): Unit = {
+  def load()(implicit ec: ExecutionContext) = {
     db.run(options.result).map(_.foreach {
       case ("blog_name", map) => privateBlogName = map
       case ("blog_description", map) => privateBlogDescription = map
@@ -42,4 +42,34 @@ object Options {
   def datetimeFormat = privateDatetimeFormat
   def defaultLocale = privateDefaultLocale
   def pageSize = privatePageSize
+
+  def blogName_=(map: Map[String, String]) = {
+    privateBlogName = map
+    db.run(options.filter(_.name === "blog_name").map(_.value).update(map))
+  }
+
+  def blogDescription_=(map: Map[String, String]) = {
+    privateBlogDescription = map
+    db.run(options.filter(_.name === "blog_description").map(_.value).update(map))
+  }
+
+  def locales_=(map: Map[String, String]) = {
+    privateLocales = map
+    db.run(options.filter(_.name === "locales").map(_.value).update(map))
+  }
+
+  def datetimeFormat_=(map: Map[String, String]) = {
+    privateDatetimeFormat = map
+    db.run(options.filter(_.name === "datetime_format").map(_.value).update(map))
+  }
+
+  def defaultLocale_=(value: String) = {
+    privateDefaultLocale = value
+    db.run(options.filter(_.name === "default_locale").map(_.value).update(Map("value" -> value)))
+  }
+
+  def pageSize_=(value: Int) = {
+    privatePageSize = value
+    db.run(options.filter(_.name === "page_size").map(_.value).update(Map("value" -> value.toString)))
+  }
 }

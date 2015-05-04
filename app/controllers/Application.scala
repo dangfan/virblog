@@ -14,8 +14,7 @@ import scala.concurrent._
 object Application extends Controller {
   def index(lang: String, page: Int) = LocalizedAsyncAction(lang) { implicit request =>
     for {
-      posts <- Posts.listByPage(if (page < 0) 1 else page)
-      postCount <- Posts.count
+      (posts, postCount) <- Posts.listByPage(if (page < 0) 1 else page)
     } yield Ok(views.html.index(posts, page, postCount))
   }
 
@@ -32,6 +31,13 @@ object Application extends Controller {
       post <- Posts.getBySlug(slug) if post.postType == PostType.Page && post.status == PostStatus.Published
     } yield Ok(views.html.page(post))
     post.recover { case _ => NotFound(views.html.notFound()) }
+  }
+
+  def tag(lang: String, slug: String, page: Int) = LocalizedAsyncAction(lang) { implicit request =>
+    for {
+      (posts, postCount) <- Posts.listByTag(slug, if (page < 0) 1 else page)
+      tag <- PostTags.getBySlug(slug)
+    } yield Ok(views.html.tag(tag, posts, page, postCount))
   }
 
   def chooseLanguage = Action.async { implicit request =>

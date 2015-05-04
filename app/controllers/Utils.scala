@@ -6,15 +6,22 @@ import java.util.Locale
 
 import controllers.Implicits._
 import models.Options
+import org.pegdown.PegDownProcessor
 
 
 object Utils {
+  private val pegdown = new PegDownProcessor()
+
   def getNewLocalizedUrl(newLang: String)(implicit request: LocalizedRequest): String = {
     val url = """/([\w-]+)/.*""".r
     request.request.path match {
       case url(oldLang, _*) => request.request.path.replace(oldLang, newLang)
       case _ => "/"
     }
+  }
+
+  def parse(markdown: String): String = {
+    pegdown.markdownToHtml(markdown)
   }
 }
 

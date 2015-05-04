@@ -40,7 +40,7 @@
                             <ul class="dropdown-menu" role="menu">
                             @for((id, name) <- Options.locales) {
                                 <li role="presentation">
-                                    <a role="menuitem" tabindex="-1" href="@controllers.Utils.getNewLocalizedUrl(id)">
+                                    <a role="menuitem" tabindex="-1" href="@Utils.getNewLocalizedUrl(id)">
                                     @name
                                     </a>
                                 </li>

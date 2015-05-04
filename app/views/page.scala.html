@@ -7,7 +7,7 @@
         <h2 class="subheading">@post.subtitle.localize</h2>
     </div>
 } {
-    <article>
-    @post.content.localize
+    <article class="@request.lang">
+    @Html(Utils.parse(post.content.localize))
     </article>
 }
