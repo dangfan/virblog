@@ -1,0 +1,30 @@
+<div class="login-page">
+    <div class="row">
+        <div class="dropdown pull-right" dropdown>
+            <button class="btn btn-white btn-outline btn-sm btn-rounded dropdown-toggle" dropdown-toggle>
+                {{'LANGUAGE' | translate}} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a ng-click="setLang('en')">English</a></li>
+                <li><a ng-click="setLang('zh-CN')">简体中文</a></li>
+            </ul>
+        </div>
+    </div>
+	<div class="row">
+		<div class="col-md-4 col-lg-4 col-md-offset-4 col-lg-offset-4">
+			<h1>Virblog <small>{{'login.ADMIN' | translate}}</small></h1>
+			<form role="form" ng-submit="submit()">
+				<div class="form-content">
+					<div class="form-group">
+						<input type="text" class="form-control input-underline input-lg" placeholder="{{'login.USERNAME' | translate}}" ng-model="login.username">
+					</div>
+					<div class="form-group">
+						<input type="password" class="form-control input-underline input-lg" placeholder="{{'login.PASSWORD' | translate}}" ng-model="login.password">
+					</div>
+					<div class="alert alert-danger" ng-show="authMsg">{{authMsg | translate}}</div>
+				</div>
+				<button type="submit" class="btn btn-white btn-outline btn-lg btn-rounded">{{'login.LOGIN' | translate}}</button>
+			</form>
+		</div>
+	</div>
+</div>

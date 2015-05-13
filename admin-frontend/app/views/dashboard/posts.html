@@ -1,0 +1,58 @@
+<div>
+  <h2>{{title | translate}}
+    <small><a ui-sref="dashboard.editor({slug: '', type: type})">
+      {{'posts.ADD' | translate}}
+    </a></small>
+  </h2>
+  <div class="posts-status">
+    <ul class="nav nav-pills">
+      <li ng-class="{active: status == 'Published'}">
+        <a ng-click="status = 'Published'">{{'posts.PUBLISHED' | translate}}</a>
+      </li>
+      <li ng-class="{active: status == 'Draft'}">
+        <a ng-click="status = 'Draft'">{{'posts.DRAFT' | translate}}</a>
+      </li>
+    </ul>
+  </div>
+  <div class="posts">
+    <div class="panel panel-default" ng-repeat="post in posts" ng-init="langKey = $translate.use()">
+      <div class="panel-body">
+        <h3>{{post.title[langKey]}}</h3>
+        <p ng-bind-html="render(post.excerpt[langKey])"></p>
+      </div>
+      <div class="panel-footer">
+        <ul class="nav nav-pills nav-justified">
+          <li><a ui-sref="dashboard.editor({slug: post.slug})">
+            <span class="glyphicon glyphicon-pencil"></span> {{'posts.EDIT' | translate}}
+          </a></li>
+          <li><a href="/{{langKey}}/{{type | lowercase}}s/{{post.slug}}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> {{'posts.VIEW' | translate}}</a></li>
+          <li ng-if="status == 'Published'">
+            <a ng-click="unpublish(post)">
+              <span class="glyphicon glyphicon-save"></span> {{'posts.UNPUBLISH' | translate}}
+            </a>
+          </li>
+          <li ng-if="status == 'Draft'">
+            <a ng-click="publish(post)">
+              <span class="glyphicon glyphicon-open"></span> {{'posts.PUBLISH' | translate}}
+            </a>
+          </li>
+          <li><a ng-bootbox-confirm="{{'posts.CONFIRM_DELETE' | translate}}"
+                 ng-bootbox-confirm-action="remove(post)"><span class="glyphicon glyphicon-trash"></span> {{'posts.TRASH' | translate}}</a></li>
+          <li dropdown>
+            <a dropdown-toggle><span class="glyphicon glyphicon-font"></span> {{'LANGUAGE' | translate}}<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li ng-repeat="locale in locales">
+                <a ng-click="$parent.langKey = locale.code">{{locale.name}}</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div>
+    <pagination boundary-links="true" total-items="count" ng-model="currentPage" class="pagination-sm"
+                previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+                ng-change="pageChanged()" items-per-page="settings.page_size"></pagination>
+  </div>
+</div>

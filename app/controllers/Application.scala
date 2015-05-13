@@ -13,14 +13,18 @@ import scala.concurrent._
 
 object Application extends Controller {
   def index(lang: String, page: Int) = LocalizedAsyncAction(lang) { implicit request =>
-    for {
-      (posts, postCount) <- Posts.listByPage(if (page < 0) 1 else page)
-    } yield Ok(views.html.index(posts, page, postCount))
+    if (page <= 0) {
+      Future(Redirect(routes.Application.index(lang, 1)))
+    } else {
+      for {
+        (posts, postCount) <- Posts.listByPage(page)
+      } yield Ok(views.html.index(posts, page, postCount))
+    }
   }
 
   def post(lang: String, slug: String) = LocalizedAsyncAction(lang) { implicit request =>
     val post = for {
-      post <- Posts.getBySlug(slug) if post.postType == PostType.Post && post.status == PostStatus.Published
+      post <- Posts.getBySlug(slug) if post.postType == PostTypes.Post && post.status == PostStatuses.Published
       tags <- PostTags.getBySlugs(post.tags)
     } yield Ok(views.html.post(post, tags))
     post.recover { case _ => NotFound(views.html.notFound()) }
@@ -28,7 +32,7 @@ object Application extends Controller {
 
   def page(lang: String, slug: String) = LocalizedAsyncAction(lang) { implicit request =>
     val post = for {
-      post <- Posts.getBySlug(slug) if post.postType == PostType.Page && post.status == PostStatus.Published
+      post <- Posts.getBySlug(slug) if post.postType == PostTypes.Page && post.status == PostStatuses.Published
     } yield Ok(views.html.page(post))
     post.recover { case _ => NotFound(views.html.notFound()) }
   }
@@ -41,11 +45,17 @@ object Application extends Controller {
   }
 
   def chooseLanguage = Action.async { implicit request =>
-    request.acceptLanguages.find(Lang.availables.contains) match {
-      case Some(lang) => Future {
-        Redirect(routes.Application.index(lang.code))
+    request.acceptLanguages.map { lang =>
+      if (lang.language == "zh") {
+        Some(if (lang.country == "CN" || lang.country == "SG") "zh-Hans" else "zh-Hant")
+      } else if (Lang.availables.contains(lang)) {
+        Some(lang.code)
+      } else {
+        None
       }
-      case None => IP2Languages.getLangCode(request.remoteAddress).map { code =>
+    }.find(_.isDefined).flatten match {
+      case Some(code) => Future(Redirect(routes.Application.index(code)))
+      case _ => IpUtils.getLangCode(request.remoteAddress).map { code =>
         Redirect(routes.Application.index(code))
       }
     }

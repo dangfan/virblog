@@ -5,7 +5,7 @@ import play.api.mvc._
 
 import scala.concurrent._
 
-case class LocalizedRequest(lang: String, request: Request[AnyContent])
+case class LocalizedRequest(lang: String, country: String, request: Request[AnyContent])
   extends WrappedRequest(request)
 
 case class AuthenticatedRequest[A](user: User, request: Request[A])
@@ -14,19 +14,16 @@ case class AuthenticatedRequest[A](user: User, request: Request[A])
 
 object Actions {
 
-  def LocalizedAction(lang: String)(f: LocalizedRequest => Result) = {
-    Action { request =>
-      f(LocalizedRequest(lang, request))
-    }
-  }
-
-  def LocalizedAsyncAction(lang: String)(f: LocalizedRequest => Future[Result]) = {
+  def LocalizedAsyncAction(lang: String)(f: LocalizedRequest => Future[Result])(implicit ec: ExecutionContext) = {
     Action.async { request =>
-      f(LocalizedRequest(lang, request))
+      val ip = request.headers.get("X-Real-IP").getOrElse(request.remoteAddress)
+      IpUtils.getCountry(ip).flatMap { country =>
+        f(LocalizedRequest(lang, country, request))
+      }
     }
   }
 
-  def AuthenticatedAsyncAction[A](bodyParser : play.api.mvc.BodyParser[A])(f: AuthenticatedRequest[A] => Future[Result])(implicit ec: ExecutionContext) = {
+  def AuthenticatedAsyncAction[A](bodyParser: play.api.mvc.BodyParser[A])(f: AuthenticatedRequest[A] => Future[Result])(implicit ec: ExecutionContext) = {
     Action.async(bodyParser) { request =>
       request.session.get("sid").map { sid =>
         Users.getUser(sid).flatMap {

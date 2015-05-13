@@ -1,0 +1,142 @@
+<div class="settings">
+  <h2>{{'nav.SETTINGS' | translate}}</h2>
+
+  <div class="jumbotron">
+    <div class="container">
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{'LANGUAGE' | translate}}</label>
+          <div class="col-sm-10">
+            <select chosen
+                    ng-model="newLocale"
+                    data-placeholder="{{'settings.ADD_LOCALE' | translate}}"
+                    data-search-contains="true"
+                    ng-options="locale.code as locale.name + ' (' + locale.code + ')' disable when settings.locales[locale.code] for locale in availableLocales"
+                    ng-change="addLocale()">
+              <option value=""></option>
+            </select>
+            <table st-table="settings.locales" class="table">
+              <thead>
+              <tr>
+                <th>{{'settings.LOCALE_CODE' | translate}}</th>
+                <th>{{'settings.DISPLAY_NAME' | translate}}</th>
+                <th>{{'settings.SET_DEFAULT' | translate}}</th>
+                <th>{{'settings.DELETE' | translate}}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="locale in locales">
+                <td><input class="form-control" ng-model="locale.code" readonly></td>
+                <td><input class="form-control" ng-model="locale.name"></td>
+                <td>
+                  <button type="button" ng-click="setDefaultLocale(locale.code)"
+                          class="btn btn-sm btn-success btn-rounded">
+                    <i class="glyphicon glyphicon-ok"></i>
+                  </button>
+                  <span ng-show="locale.code == settings.default_locale">{{'settings.DEFAULT' | translate}}</span>
+                </td>
+                <td>
+                  <button type="button" ng-bootbox-confirm="{{'settings.CONFIRM_DELETE' | translate}}"
+                          ng-bootbox-confirm-action="removeLocale($index)"
+                          class="btn btn-danger btn-sm btn-rounded">
+                    <i class="glyphicon glyphicon-remove">
+                    </i>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4">
+                  <button class="btn btn-sm btn-outline btn-info btn-rounded" ng-click="saveLang()">{{'settings.SAVE' | translate}}</button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="jumbotron">
+    <div class="container">
+      <form class="form-horizontal">
+        <div class="form-group" new-scope ng-init="langKey = $translate.use()">
+          <label class="col-sm-2 control-label">{{'settings.BLOG_NAME' | translate}}</label>
+
+          <div class="col-sm-10">
+            <div class="input-group">
+              <div class="input-group-addon">{{settings.locales[langKey]}}</div>
+              <input type="text" class="form-control" placeholder="{{'settings.BLOG_NAME' | translate}}"
+                     ng-model="settings.blog_name[langKey]">
+
+              <div class="input-group-addon dropdown" dropdown>
+                <a dropdown-toggle>{{'LANGUAGE' | translate}} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li ng-repeat="locale in locales">
+                    <a ng-click="$parent.langKey = locale.code">{{locale.name}}</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" new-scope ng-init="langKey = $translate.use()">
+          <label class="col-sm-2 control-label">{{'settings.BLOG_DESCRIPTION' | translate}}</label>
+
+          <div class="col-sm-10">
+            <div class="input-group">
+              <div class="input-group-addon">{{settings.locales[langKey]}}</div>
+              <input type="text" class="form-control"
+                     placeholder="{{'settings.BLOG_DESCRIPTION' | translate}}"
+                     ng-model="settings.blog_description[langKey]">
+
+              <div class="input-group-addon dropdown" dropdown>
+                <a dropdown-toggle>{{'LANGUAGE' | translate}} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li ng-repeat="locale in locales">
+                    <a ng-click="$parent.langKey = locale.code">{{locale.name}}</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" new-scope ng-init="langKey = $translate.use()">
+          <label class="col-sm-2 control-label">{{'settings.DATETIME_FORMAT' | translate}}</label>
+
+          <div class="col-sm-10">
+            <div class="input-group">
+              <div class="input-group-addon">{{settings.locales[langKey]}}</div>
+              <input type="text" class="form-control"
+                     placeholder="{{'settings.DATETIME_FORMAT' | translate}}"
+                     ng-model="settings.datetime_format[langKey]">
+
+              <div class="input-group-addon dropdown" dropdown>
+                <a dropdown-toggle>{{'LANGUAGE' | translate}} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li ng-repeat="locale in locales">
+                    <a ng-click="$parent.langKey = locale.code">{{locale.name}}</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{'settings.PAGE_SIZE' | translate}}</label>
+
+          <div class="col-sm-10">
+            <input class="form-control" ng-model="settings.page_size" type="number">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button class="btn btn-info btn-sm btn-outline btn-rounded" ng-click="save()">{{'settings.SAVE' | translate}}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 @(posts: Seq[Post], pageNumber: Int, postCount: Int)(implicit request: controllers.LocalizedRequest)
 @import controllers.Implicits._
 
-@main(Options.blogName.localize) {
+@main(Options.blogName.localize, "") {
     <div class="site-heading">
         <h1>@Options.blogName.localize</h1>
         <hr class="small">
@@ -18,8 +18,8 @@
                 <h3 class="post-subtitle">@post.subtitle.localize</h3>
             </a>
             <p class="post-meta">@Messages("time", post.time.localize)</p>
-            <article class="@request.lang">
-            @Html(Utils.parse(post.excerpt.localize))
+            <article>
+            @Html(Utils.parseMarkdown(post.excerpt.localize))
             </article>
         </div>
     }
@@ -34,7 +34,7 @@
         @if(postCount > pageNumber * Options.pageSize) {
             <li class="next">
                 <a href="?page=@{
-                    pageNumber - 1
+                    pageNumber + 1
                 }">@Messages("pagination.next") &rarr;</a>
             </li>
         }

@@ -16,8 +16,8 @@ object PGDriver extends PostgresDriver
                              with EnumImplicits {}
 
   trait EnumImplicits {
-    implicit val postStatusTypeMapper = createEnumJdbcType("PostStatus", PostStatus)
-    implicit val postTypeTypeMapper = createEnumJdbcType("PostType", PostType)
+    implicit val postStatusTypeMapper = createEnumJdbcType("PostStatus", PostStatuses, quoteName = true)
+    implicit val postTypeTypeMapper = createEnumJdbcType("PostType", PostTypes, quoteName = true)
   }
 
 }

@@ -3,13 +3,13 @@ package models.enums
 import play.api.libs.json._
 
 
-object PostType extends Enumeration {
+object PostTypes extends Enumeration {
   type PostType = Value
   val Post, Page = Value
 
   implicit def reads: Reads[PostType] = new Reads[PostType] {
     def reads(json: JsValue): JsResult[PostType] = json match {
-      case JsString(v) => JsSuccess(PostType.withName(v))
+      case JsString(v) => JsSuccess(PostTypes.withName(v))
       case _ => JsError("String value expected")
     }
   }

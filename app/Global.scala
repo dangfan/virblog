@@ -14,6 +14,12 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) = {
     DAO.db = Database.forConfig("database")
     Options.load()
+
+    Users.count.map { count =>
+      if (count == 0) {
+        Users.create("admin", "admin")
+      }
+    }
   }
 
   override def onStop(app: Application) = {
@@ -23,7 +29,7 @@ object Global extends GlobalSettings {
   override def onHandlerNotFound(request: RequestHeader) = {
     val url = """[\w-]+""".r
     val lang = url.findFirstIn(request.path).getOrElse(Options.defaultLocale)
-    val localizedRequest = LocalizedRequest(lang, Request[AnyContent](request, AnyContentAsEmpty))
+    val localizedRequest = LocalizedRequest(lang, "", Request[AnyContent](request, AnyContentAsEmpty))
     Future.successful(NotFound(views.html.notFound()(localizedRequest)))
   }
 }

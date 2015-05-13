@@ -42,6 +42,10 @@ object PostTags {
     db.run(objects.filter(_.slug === slug).delete)
   }
 
+  def clear: Future[Int] = {
+    db.run(objects.delete)
+  }
+
   def update(tag: PostTag): Future[Int] = {
     db.run(objects.filter(_.slug === tag.slug).map(_.name).update(tag.name))
   }

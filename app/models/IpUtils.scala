@@ -22,7 +22,7 @@ class Country2Languages(tag: Tag) extends Table[(String, String, String)](tag, "
   def * = (code, lang_code, iso_country)
 }
 
-object IP2Languages {
+object IpUtils {
   private val ip2Countries = TableQuery[IP2Countries]
   private val country2Languages = TableQuery[Country2Languages]
   private val db = DAO.db
@@ -37,6 +37,13 @@ object IP2Languages {
       i <- ip2Countries.sortBy(_.ip) if i.ip >= ipToDecimal(ip)
       c <- country2Languages if i.country === c.code
     } yield c.lang_code).take(1)
+    db.run(q.result.head)
+  }
+
+  def getCountry(ip: String): Future[String] = {
+    val q = (for {
+      i <- ip2Countries.sortBy(_.ip) if i.ip >= ipToDecimal(ip)
+    } yield i.country).take(1)
     db.run(q.result.head)
   }
 }

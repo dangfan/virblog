@@ -4,13 +4,18 @@ import java.time._
 import java.time.format._
 import java.util.Locale
 
+import com.sun.jna.Pointer
 import controllers.Implicits._
 import models.Options
 import org.pegdown.PegDownProcessor
+import play.api.i18n.Lang
+import sna.Library
 
 
 object Utils {
   private val pegdown = new PegDownProcessor()
+  private val libopencc = Library("opencc")
+  private val opencc = libopencc.opencc_open("s2t.json")[Pointer]
 
   def getNewLocalizedUrl(newLang: String)(implicit request: LocalizedRequest): String = {
     val url = """/([\w-]+)/.*""".r
@@ -20,8 +25,24 @@ object Utils {
     }
   }
 
-  def parse(markdown: String): String = {
+  def getLang(langCode: String): Lang = {
+    // play does not support language with script, use tricks for specific languages
+    if (langCode == "zh-Hans") return Lang("zhs")
+    if (langCode == "zh-Hant") return Lang("zht")
+    Lang(langCode)
+  }
+
+  def getMainLang(langCode: String): String = {
+    langCode.split("-")(0)
+  }
+
+  def parseMarkdown(markdown: String): String = {
     pegdown.markdownToHtml(markdown)
+  }
+
+  def zhs2Zht(content: String): String = {
+    val data = content.getBytes
+    libopencc.opencc_convert_utf8(opencc, data, data.length)[String]
   }
 }
 
@@ -32,15 +53,10 @@ final class LocalizedMap(val self: Map[String, String]) {
 }
 
 final class LocalizedDatetime(val self: LocalDateTime) {
-  private val SimpleLocale = """([a-zA-Z]{2,3})""".r
-  private val CountryLocale = (SimpleLocale.toString + """-([a-zA-Z]{2}|[0-9]{3})""").r
 
   private def getLocale(code: String): Locale = {
-    code match {
-      case SimpleLocale(language) => new Locale(language)
-      case CountryLocale(language, country) => new Locale(language, country)
-      case _ => null
-    }
+    val lang = Utils.getLang(code)
+    new Locale(lang.language)
   }
 
   def localize(implicit request: LocalizedRequest): String = {

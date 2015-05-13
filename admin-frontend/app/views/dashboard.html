@@ -1,0 +1,36 @@
+<div class="dashboard-page">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-3 col-md-2 sidebar">
+
+        <div class="text-center">
+          <h2 class="brand">Virblog</h2>
+          <img ng-src="{{avatar || 'images/flat-avatar.png'}}" class="user-avatar"/><br/>
+          <p>{{user.nickname || user.username}}</p>
+          <a href="/api/v1/logout" class="btn btn-white btn-outline btn-rounded btn-sm">{{'login.LOGOUT' | translate}}</a>
+        </div>
+
+        <ul class="nav nav-sidebar">
+          <li ng-class="{active: $state.includes('dashboard.posts')}">
+            <a ui-sref="dashboard.posts">{{'nav.POSTS' | translate}}</a>
+          </li>
+          <li ng-class="{active: $state.includes('dashboard.pages')}">
+            <a ui-sref="dashboard.pages">{{'nav.PAGES' | translate}}</a>
+          </li>
+          <li ng-class="{active: $state.includes('dashboard.tags')}">
+            <a ui-sref="dashboard.tags">{{'nav.TAGS' | translate}}</a>
+          </li>
+          <li ng-class="{active: $state.includes('dashboard.settings')}">
+            <a ui-sref="dashboard.settings">{{'nav.SETTINGS' | translate}}</a>
+          </li>
+          <li ng-class="{active: $state.includes('dashboard.users')}">
+            <a ui-sref="dashboard.users">{{'nav.USERS' | translate}}</a>
+          </li>
+        </ul>
+
+      </div>
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" ui-view>
+      </div>
+    </div>
+  </div>
+</div>

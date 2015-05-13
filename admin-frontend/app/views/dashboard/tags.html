@@ -1,0 +1,34 @@
+<div class="tags">
+  <h2>{{'nav.TAGS' | translate}}</h2>
+
+  <div class="jumbotron">
+    <table ng-table="tableParams" class="table">
+      <tbody ng-repeat="group in $groups" ng-init="group.$hideRows=true">
+      <tr class="ng-table-group">
+        <td colspan="{{$columns.length}}">
+          <a href="" ng-click="group.$hideRows = !group.$hideRows">
+            <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
+            <strong>{{ group.value }}</strong>
+          </a>
+        </td>
+      </tr>
+      <tr ng-hide="group.$hideRows" ng-repeat="tag in group.data">
+        <td data-title="'LANGUAGE' | translate" class="locale">
+          <span>{{locales[tag.code]}}</span>
+        </td>
+        <td data-title="'tags.NAME' | translate">
+          <input class="form-control" ng-model="tag.name">
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-1">
+        <button class="btn btn-outline btn-rounded btn-info" ng-click="add()">{{'tags.ADD' | translate}}</button>
+      </div>
+      <div class="col-sm-offset-2">
+        <button class="btn btn-outline btn-rounded btn-info" ng-click="save()">{{'settings.SAVE' | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

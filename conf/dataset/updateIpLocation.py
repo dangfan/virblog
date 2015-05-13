@@ -12,7 +12,7 @@ if len(sys.argv) != 2:
 
 filename = sys.argv[1]
 ipv4_mode = True
-conn = psycopg2.connect('dbname=terro user=terro')
+conn = psycopg2.connect('dbname=yourdb user=youruser')
 cur = conn.cursor()
 cur.execute('DROP TABLE IF EXISTS "IP2COUNTRIES";')
 cur.execute('CREATE TABLE "IP2COUNTRIES" ("IP" NUMERIC PRIMARY KEY, "COUNTRY" CHAR(2) NOT NULL);')

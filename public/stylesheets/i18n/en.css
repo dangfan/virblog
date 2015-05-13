@@ -1,0 +1,39 @@
+body {
+    font-family: 'Lora', 'Times New Roman', serif;
+}
+p {
+    line-height: 1.5;
+    margin: 30px 0;
+}
+h1, h2, h3,  h4, h5, h6 {
+    font-weight: 800;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+blockquote {
+    font-style: italic;
+}
+.navbar-custom {
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.intro-header .site-heading .subheading,
+.intro-header .page-heading .subheading {
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.intro-header .post-heading .subheading {
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.intro-header .post-heading .meta {
+    font-family: 'Lora', 'Times New Roman', serif;
+    font-style: italic;
+}
+.post-preview > .post-meta {
+    font-style: italic;
+}
+.pager li > a,
+.pager li > span {
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.post-tags {
+    font-style: normal;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}

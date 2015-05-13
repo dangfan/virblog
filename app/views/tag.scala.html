@@ -1,7 +1,7 @@
 @(tag: PostTag, posts: Seq[Post], pageNumber: Int, postCount: Int)(implicit request: controllers.LocalizedRequest)
 @import controllers.Implicits._
 
-@main(Options.blogName.localize) {
+@main(tag.name.localize + " - " + Options.blogName.localize, "") {
     <div class="site-heading">
         <h1>@Options.blogName.localize</h1>
         <hr class="small">
@@ -13,13 +13,13 @@
             <hr>
         }
         <div class="post-preview">
-            <a href="posts/@post.slug">
+            <a href="/@request.lang/posts/@post.slug">
                 <h2 class="post-title">@post.title.localize</h2>
                 <h3 class="post-subtitle">@post.subtitle.localize</h3>
             </a>
             <p class="post-meta">@Messages("time", post.time.localize)</p>
             <article class="@request.lang">
-            @Html(Utils.parse(post.excerpt.localize))
+            @Html(Utils.parseMarkdown(post.excerpt.localize))
             </article>
         </div>
     }

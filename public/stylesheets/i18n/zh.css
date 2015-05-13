@@ -1,0 +1,80 @@
+article > p:lang(zh-Hant),
+article > ul:lang(zh-Hant) {
+    font-family: "Biaodian Pro Serif CNS", "Numeral LF Serif", Georgia, "Times New Roman", "Zhuyin Kaiti", "Han Songti", serif;
+}
+
+article > p:lang(zh-Hans),
+article > ul:lang(zh-Hans) {
+    font-family: "Biaodian Serif", "Numeral LF Serif", Georgia, "Times New Roman", "Han Songti GB", serif;
+}
+
+article p {
+    text-indent: 2em;
+}
+
+article p, article ul {
+    margin: 0;
+}
+
+article h1, article h2, article h3, article h4, article h5, article h6 {
+    margin-bottom: 1em;
+    border-bottom: 1px solid #dcd6ca;
+}
+
+article h1:lang(zh-Hant),
+article h2:lang(zh-Hant),
+article h3:lang(zh-Hant),
+article h4:lang(zh-Hant),
+article h5:lang(zh-Hant),
+article h6:lang(zh-Hant) {
+    font-family: "Biaodian Pro Sans CNS", "Latin Italic Sans", "Helvetica Neue", Helvetica, Arial, "Zhuyin Heiti", "Han Heiti", sans-serif;
+}
+
+article h1:lang(zh-Hans),
+article h2:lang(zh-Hans),
+article h3:lang(zh-Hans),
+article h4:lang(zh-Hans),
+article h5:lang(zh-Hans),
+article h6:lang(zh-Hans) {
+    font-family: "Biaodian Pro Sans GB", "Latin Italic Sans", "Helvetica Neue", Helvetica, Arial, "Han Heiti GB", sans-serif;
+}
+
+.close, .close:hover {
+    float: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    text-shadow: inherit;
+    filter: inherit;
+    opacity: inherit;
+    cursor: inherit;
+}
+
+blockquote {
+    margin: 1em 4em 1em 4em !important;
+    padding: 0;
+    border: none;
+}
+
+.meta:lang(zh-Hant),
+.post-meta:lang(zh-Hant) {
+    font-family: "Biaodian Pro Serif CNS", "Numeral LF Serif", Georgia, "Times New Roman", "Zhuyin Kaiti", "Han Kaiti", cursive, serif;
+}
+
+.meta:lang(zh-Hans),
+.post-meta:lang(zh-Hans) {
+    font-family: "Biaodian Pro Serif GB", "Numeral LF Serif", Georgia, "Times New Roman", "Han Kaiti GB", cursive, serif;
+}
+
+.post-tags:lang(zh-Hant) {
+    font-family: "Biaodian Pro Sans CNS", "Helvetica Neue", Helvetica, Arial, "Zhuyin Heiti", "Han Heiti", sans-serif;
+}
+
+.post-tags:lang(zh-Hans) {
+    font-family: "Biaodian Pro Sans GB", "Helvetica Neue", Helvetica, Arial, "Han Heiti GB", sans-serif;
+}
+
+i.fa:lang(zh-Hans), i.fa:lang(zh-Hant) {
+    font-family: FontAwesome;
+}

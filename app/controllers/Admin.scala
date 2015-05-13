@@ -4,6 +4,7 @@ import controllers.Actions._
 import models.PostTags._
 import models.Posts._
 import models._
+import models.enums._
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.mvc._
@@ -13,6 +14,7 @@ import scala.concurrent.Future
 
 
 case class LoginInfo(username: String, password: String)
+
 case class OptionInfo(blogName: Map[String, String],
                       blogDescription: Map[String, String],
                       locales: Map[String, String],
@@ -25,7 +27,7 @@ object Admin extends Controller {
     (JsPath \ "username").read[String] and
     (JsPath \ "password").read[String]
   )(LoginInfo.apply _)
-  
+
   implicit val optionInfoReads: Reads[OptionInfo] = (
     (JsPath \ "blog_name").read[Map[String, String]] and
     (JsPath \ "blog_description").read[Map[String, String]] and
@@ -34,7 +36,7 @@ object Admin extends Controller {
     (JsPath \ "default_locale").read[String] and
     (JsPath \ "page_size").read[Int]
   )(OptionInfo.apply _)
-  
+
   implicit val optionInfoWrites: Writes[OptionInfo] = (
     (JsPath \ "blog_name").write[Map[String, String]] and
     (JsPath \ "blog_description").write[Map[String, String]] and
@@ -61,6 +63,16 @@ object Admin extends Controller {
     )
   }
 
+  def logout = AuthenticatedAsyncAction { request =>
+    Users.logout(request.user.username)
+    Future(Redirect("/admin/"))
+  }
+
+  def getUserInfo = AuthenticatedAsyncAction { request =>
+    val user = request.user
+    Future(Ok(Json.obj("username" -> user.username, "email" -> user.email, "nickname" -> user.nickname)))
+  }
+
   def tags = AuthenticatedAsyncAction { request =>
     PostTags.all.map { tags =>
       Ok(Json.toJson(tags))
@@ -83,20 +95,35 @@ object Admin extends Controller {
     }
   }
 
-  def updateTag = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
-    val tagResult = request.body.validate[PostTag]
+  def updateTags = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
+    val tagResult = request.body.validate[List[PostTag]]
     tagResult.fold(
       errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      tag => PostTags.update(tag).map(line => ok).recover {
+      tags => PostTags.clear.flatMap { line =>
+        Future.sequence(tags.map(PostTags.insert)).map { line => ok }.recover {
+          case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+        }
+      }.recover {
         case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
       }
     )
   }
 
-  def posts(page: Int) = AuthenticatedAsyncAction { request =>
+  def posts(page: Int, postType: String, postStatus: String) = AuthenticatedAsyncAction { request =>
     for {
-      (posts, postCount) <- Posts.listByPage(if (page < 0) 1 else page)
+      (posts, postCount) <- Posts.listByPage(
+        if (page < 0) 1 else page,
+        PostTypes.withName(postType),
+        PostStatuses.withName(postStatus)
+      )
     } yield Ok(Json.obj("count" -> postCount, "data" -> posts))
+  }
+
+  def getPost(slug: String) = AuthenticatedAsyncAction { request =>
+    val post = for {
+      post <- Posts.getBySlug(slug)
+    } yield Ok(Json.toJson(post))
+    post.recover { case _ => NotFound(Json.obj("status" -> "err")) }
   }
 
   def addPost = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
@@ -145,5 +172,21 @@ object Admin extends Controller {
         Future(ok)
       }
     )
+  }
+
+  def updatePassword = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
+    val oldPassword = (request.body \ "old").as[String]
+    val newPassword = (request.body \ "new").as[String]
+    Users.updatePassword(request.user.username, newPassword, oldPassword).map { success =>
+      if (success) ok else BadRequest(Json.obj("status" -> "err", "message" -> "Password not match"))
+    }
+  }
+
+  def updateUser = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
+    val email = (request.body \ "email").as[String]
+    val nickname = (request.body \ "nickname").as[String]
+    Users.update(User(request.user.username, "", Some(email), Some(nickname), None, None)).map { _ =>
+      ok
+    }
   }
 }

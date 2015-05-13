@@ -1,0 +1,87 @@
+<div class="settings">
+  <h2>{{'nav.USERS' | translate}}</h2>
+
+  <div class="jumbotron">
+    <div class="container">
+      <form class="form-horizontal" name="form">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{'users.USERNAME' | translate}}</label>
+
+          <div class="col-sm-10">
+            <div class="readonly">{{user.username}}</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{'users.PASSWORD' | translate}}</label>
+
+          <div class="col-sm-10">
+            <div class="readonly">
+              <a ng-click="open()">{{'users.CHANGE_PASSWORD' | translate}}</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{'users.EMAIL' | translate}} *</label>
+
+          <div class="col-sm-10">
+            <input class="form-control" ng-model="user.email" type="email" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">{{'users.NICKNAME' | translate}} *</label>
+
+          <div class="col-sm-10">
+            <input class="form-control" ng-model="user.nickname" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button class="btn btn-info btn-sm btn-outline btn-rounded"
+                    ng-click="save()" ng-disabled="form.$invalid">
+              {{'settings.SAVE' | translate}}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="ChangePassword">
+  <div class="modal-header">
+    <h3 class="modal-title">{{'users.CHANGE_PASSWORD' | translate}}</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal" name="form">
+      <div class="form-group">
+        <label class="col-sm-2 control-label">{{'users.OLD_PASSWORD' | translate}}</label>
+        <div class="col-sm-10">
+          <input class="form-control" ng-model="passwords.old" type="password" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">{{'users.NEW_PASSWORD' | translate}}</label>
+        <div class="col-sm-10">
+          <input class="form-control" id="new" ng-model="passwords.new" type="password" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-2 control-label">{{'users.CONFIRM_PASSWORD' | translate}}</label>
+        <div class="col-sm-10">
+          <input class="form-control" ng-model="passwords.confirm" name="confirm"
+                 type="password" required pw-check="new">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <span class="pull-left" ng-show="form.confirm.$error.pwmatch">{{'users.TWO_NOT_MATCH' | translate}}</span>
+    <span class="pull-left" ng-show="!form.confirm.$error.pwmatch && mismatch">{{'users.OLD_NOT_MATCH' | translate}}</span>
+    <button class="btn btn-primary" ng-click="ok()" ng-disabled="form.$invalid">{{'users.OK' | translate}}</button>
+    <button class="btn btn-warning" ng-click="cancel()">{{'users.CANCEL' | translate}}</button>
+  </div>
+</script>

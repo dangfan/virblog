@@ -1,24 +1,30 @@
 # Routes
 
 # Blog pages
-GET           /                         controllers.Application.chooseLanguage
-GET           /:lang/                   controllers.Application.index(lang: String, page: Int ?= 1)
-GET           /:lang/posts/:slug        controllers.Application.post(lang: String, slug: String)
-GET           /:lang/pages/:slug        controllers.Application.page(lang: String, slug: String)
-GET           /:lang/tags/:slug         controllers.Application.tag(lang: String, slug: String, page: Int ?= 1)
+GET           /                                    controllers.Application.chooseLanguage
+GET           /:lang/                              controllers.Application.index(lang: String, page: Int ?= 1)
+GET           /:lang/posts/:slug                   controllers.Application.post(lang: String, slug: String)
+GET           /:lang/pages/:slug                   controllers.Application.page(lang: String, slug: String)
+GET           /:lang/tags/:slug                    controllers.Application.tag(lang: String, slug: String, page: Int ?= 1)
 
 # Admin APIs
-POST          /api/login                controllers.Admin.login
-GET           /api/tags                 controllers.Admin.tags
-POST          /api/tags                 controllers.Admin.addTag
-PUT           /api/tags                 controllers.Admin.updateTag
-DELETE        /api/tags/:slug           controllers.Admin.delTag(slug: String)
-GET           /api/posts                controllers.Admin.posts(page: Int ?= 1)
-POST          /api/posts                controllers.Admin.addPost
-PUT           /api/posts                controllers.Admin.updatePost
-DELETE        /api/posts/:slug          controllers.Admin.delPost(slug: String)
-GET           /api/options              controllers.Admin.getOptions
-PUT           /api/options              controllers.Admin.updateOptions
+POST          /api/v1/login                        controllers.Admin.login
+GET           /api/v1/logout                       controllers.Admin.logout
+GET           /api/v1/user-info                    controllers.Admin.getUserInfo
+GET           /api/v1/tags                         controllers.Admin.tags
+POST          /api/v1/tags                         controllers.Admin.addTag
+PUT           /api/v1/tags                         controllers.Admin.updateTags
+DELETE        /api/v1/tags/:slug                   controllers.Admin.delTag(slug: String)
+GET           /api/v1/posts                        controllers.Admin.posts(page: Int ?= 1, type: String, status: String)
+POST          /api/v1/posts                        controllers.Admin.addPost
+PUT           /api/v1/posts                        controllers.Admin.updatePost
+DELETE        /api/v1/posts/:slug                  controllers.Admin.delPost(slug: String)
+GET           /api/v1/posts/:slug                  controllers.Admin.getPost(slug: String)
+GET           /api/v1/options                      controllers.Admin.getOptions
+PUT           /api/v1/options                      controllers.Admin.updateOptions
+POST          /api/v1/i18n/zhs2zht                 controllers.I18n.zhs2Zht
+PUT           /api/v1/users/update-password        controllers.Admin.updatePassword
+PUT           /api/v1/users/update                 controllers.Admin.updateUser
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file             controllers.Assets.at(path="/public", file)
+GET           /assets/*file                        controllers.Assets.at(path="/public", file)

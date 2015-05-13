@@ -1,0 +1,23 @@
+{
+  "name": "Virblog",
+  "version": "1.0.0",
+  "dependencies": {
+    "angular": "^1.4.0",
+    "bootstrap": "^3.2.0",
+    "ui-router": "~0.2.13",
+    "bootstrap-btn-outline-rounded": "~0.0.3",
+    "angular-animate": "^1.4.0",
+    "angular-translate": "~2.7.0",
+    "angular-bootstrap": "~0.13.0",
+    "ngBootbox": "~0.0.5",
+    "angular-chosen-localytics": "~1.0.7",
+    "chosen": "~1.4.2",
+    "angular-notify": "~2.5.0",
+    "markdown-it": "~4.2.1",
+    "angular-ui-codemirror": "~0.3.0",
+    "angular-ui-bootstrap-datetimepicker": "~0.11.2",
+    "ng-table": "~0.5.4",
+    "ng-tags-input": "~2.3.0",
+    "md5": "~0.3.0"
+  }
+}
