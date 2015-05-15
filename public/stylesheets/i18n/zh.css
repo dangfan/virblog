@@ -1,19 +1,38 @@
 article > p:lang(zh-Hant),
-article > ul:lang(zh-Hant) {
+article > ul:lang(zh-Hant),
+article > ol:lang(zh-Hant) {
     font-family: "Biaodian Pro Serif CNS", "Numeral LF Serif", Georgia, "Times New Roman", "Zhuyin Kaiti", "Han Songti", serif;
 }
 
 article > p:lang(zh-Hans),
-article > ul:lang(zh-Hans) {
-    font-family: "Biaodian Serif", "Numeral LF Serif", Georgia, "Times New Roman", "Han Songti GB", serif;
+article > ul:lang(zh-Hans),
+article > ol:lang(zh-Hans) {
+    font-family: "Biaodian Pro Serif GB", "Numeral LF Serif", Georgia, "Times New Roman", "Han Songti GB", serif;
 }
 
 article p {
     text-indent: 2em;
 }
 
-article p, article ul {
+article p, article ul, article ol {
     margin: 0;
+}
+
+article ul, article ol {
+    list-style-position: inside;
+}
+
+article p h-cs:lang(zh-Hans),
+article ul h-cs:lang(zh-Hans),
+article ol h-cs:lang(zh-Hans) {
+    top: 0.1em;
+}
+
+article p h-char:lang(zh-Hans),
+article ul h-char:lang(zh-Hans),
+article ol h-char:lang(zh-Hans) {
+    position: relative;
+    top: 0.1em;
 }
 
 article h1, article h2, article h3, article h4, article h5, article h6 {
@@ -27,7 +46,7 @@ article h3:lang(zh-Hant),
 article h4:lang(zh-Hant),
 article h5:lang(zh-Hant),
 article h6:lang(zh-Hant) {
-    font-family: "Biaodian Pro Sans CNS", "Latin Italic Sans", "Helvetica Neue", Helvetica, Arial, "Zhuyin Heiti", "Han Heiti", sans-serif;
+    font-family: "Biaodian Pro Sans CNS", "Helvetica Neue", Helvetica, Arial, "Zhuyin Heiti", "Han Heiti", sans-serif;
 }
 
 article h1:lang(zh-Hans),
@@ -36,7 +55,7 @@ article h3:lang(zh-Hans),
 article h4:lang(zh-Hans),
 article h5:lang(zh-Hans),
 article h6:lang(zh-Hans) {
-    font-family: "Biaodian Pro Sans GB", "Latin Italic Sans", "Helvetica Neue", Helvetica, Arial, "Han Heiti GB", sans-serif;
+    font-family: "Biaodian Pro Sans GB", "Helvetica Neue", Helvetica, Arial, "Han Heiti GB", sans-serif;
 }
 
 .close, .close:hover {

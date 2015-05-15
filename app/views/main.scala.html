@@ -10,6 +10,7 @@
         <title>@title</title>
         <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
         <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/github.min.css" rel="stylesheet">
         @if(!request.lang.startsWith("zh")){@if(request.country == "cn") {
         <link href="http://fonts.useso.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet">
         <link href="http://fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet">
@@ -115,9 +116,22 @@
             </div>
         </footer>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
         @if(request.lang.startsWith("zh")) {
-        <script src="//cdnjs.cloudflare.com/ajax/libs/Han/3.2.1/han.js"></script>
+        <script src="@routes.Assets.at("javascripts/han.min.js")"></script>
+        <script>
+            $('p:has(img)').css('text-indent', '0');
+        </script>
         }
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
+        <script>
+            $('p:has(img)').css('text-align', 'center');
+            hljs.initHighlightingOnLoad();
+            $(function(){$('body a').last().hide();});
+        </script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.5.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <div style="display:none">
+            <script src="http://s11.cnzz.com/z_stat.php?id=1255102200&web_id=1255102200"></script>
+        </div>
     </body>
 </html>

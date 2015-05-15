@@ -18,6 +18,7 @@ INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('locales', '"en"=>"English", "zh
 INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('datetime_format', '"en"=>"MMMM d, yyyy", "zh-Hans"=>"yyyy年M月d日"');
 INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('default_locale', '"value"=>"en"');
 INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('page_size', '"value"=>"5"');
+INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('disqus_short_name', '"value"=>""');
 
 DROP TABLE IF EXISTS "POST_TAGS";
 CREATE TABLE "POST_TAGS" (

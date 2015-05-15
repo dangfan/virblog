@@ -9,7 +9,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object I18n extends Controller {
 
   def zhs2Zht = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
-    val zht = Utils.zhs2Zht((request.body \ "content").as[String])
+    var zht = Utils.zhs2Zht((request.body \ "content").as[String])
+    zht = zht.replace('“', '「')
+    zht = zht.replace('”', '」')
+    zht = zht.replace('‘', '『')
+    zht = zht.replace('’', '』')
     Future(Ok(zht))
   }
 

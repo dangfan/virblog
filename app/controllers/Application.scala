@@ -60,4 +60,12 @@ object Application extends Controller {
       }
     }
   }
+
+  def migrate(lang: String, slug: String) = Action {
+    lang match {
+      case "zhs" => Redirect(routes.Application.post("zh-Hans", slug))
+      case "zht" => Redirect(routes.Application.post("zh-Hant", slug))
+      case _ => Redirect(routes.Application.post("en", slug))
+    }
+  }
 }

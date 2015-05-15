@@ -7,8 +7,7 @@ angular.module('Virblog')
     var availableLocales = $scope.availableLocales = [
       {code: 'en', name: 'English'},
       {code: 'zh-Hans', name: '简体中文'},
-      {code: 'zh-Hant', name: '台灣繁體'},
-      {code: 'fr', name: 'Français'}];
+      {code: 'zh-Hant', name: '台灣繁體'}];
 
     $scope.$translate = $translate;
     $scope.locales = [];

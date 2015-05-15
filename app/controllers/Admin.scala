@@ -20,7 +20,8 @@ case class OptionInfo(blogName: Map[String, String],
                       locales: Map[String, String],
                       datetimeFormat: Map[String, String],
                       defaultLocale: String,
-                      pageSize: Int)
+                      pageSize: Int,
+                      disqusShortName: String)
 
 object Admin extends Controller {
   implicit val loginInfoReads: Reads[LoginInfo] = (
@@ -34,7 +35,8 @@ object Admin extends Controller {
     (JsPath \ "locales").read[Map[String, String]] and
     (JsPath \ "datetime_format").read[Map[String, String]] and
     (JsPath \ "default_locale").read[String] and
-    (JsPath \ "page_size").read[Int]
+    (JsPath \ "page_size").read[Int] and
+    (JsPath \ "disqus_short_name").read[String]
   )(OptionInfo.apply _)
 
   implicit val optionInfoWrites: Writes[OptionInfo] = (
@@ -43,7 +45,8 @@ object Admin extends Controller {
     (JsPath \ "locales").write[Map[String, String]] and
     (JsPath \ "datetime_format").write[Map[String, String]] and
     (JsPath \ "default_locale").write[String] and
-    (JsPath \ "page_size").write[Int]
+    (JsPath \ "page_size").write[Int] and
+    (JsPath \ "disqus_short_name").write[String]
   )(unlift(OptionInfo.unapply))
 
   val unauthorizedResult = Unauthorized(Json.obj(
@@ -154,7 +157,7 @@ object Admin extends Controller {
 
   def getOptions = AuthenticatedAsyncAction { request =>
     val optionInfo = OptionInfo(Options.blogName, Options.blogDescription, Options.locales,
-      Options.datetimeFormat, Options.defaultLocale, Options.pageSize)
+      Options.datetimeFormat, Options.defaultLocale, Options.pageSize, Options.disqusShortName)
     Future(Ok(Json.toJson(optionInfo)))
   }
 
@@ -169,6 +172,7 @@ object Admin extends Controller {
         Options.datetimeFormat = options.datetimeFormat
         Options.defaultLocale = options.defaultLocale
         Options.pageSize = options.pageSize
+        Options.disqusShortName = options.disqusShortName
         Future(ok)
       }
     )

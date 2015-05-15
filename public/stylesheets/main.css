@@ -220,7 +220,25 @@ body {
 .collapsing {
     transition: none;
 }
-article a {
+article p a {
     padding-bottom: .05em !important;
     border-bottom: 1px solid !important;
+}
+article img {
+    max-width: 100%;
+    margin: 1.5em 0;
+}
+code {
+    color: inherit;
+    background-color: inherit;
+}
+pre {
+    font-size: 0.8em !important;
+    margin: 1em 0;
+}
+.pager {
+    text-align: inherit;
+}
+#disqus_thread {
+    margin-top: 20px;
 }

@@ -7,20 +7,21 @@ import java.util.Locale
 import com.sun.jna.Pointer
 import controllers.Implicits._
 import models.Options
+import org.pegdown.Extensions
 import org.pegdown.PegDownProcessor
 import play.api.i18n.Lang
 import sna.Library
 
 
 object Utils {
-  private val pegdown = new PegDownProcessor()
+  private val pegdown = new PegDownProcessor(Extensions.ALL)
   private val libopencc = Library("opencc")
   private val opencc = libopencc.opencc_open("s2t.json")[Pointer]
 
   def getNewLocalizedUrl(newLang: String)(implicit request: LocalizedRequest): String = {
     val url = """/([\w-]+)/.*""".r
-    request.request.path match {
-      case url(oldLang, _*) => request.request.path.replace(oldLang, newLang)
+    request.uri match {
+      case url(oldLang, _*) => request.uri.replace(oldLang, newLang)
       case _ => "/"
     }
   }

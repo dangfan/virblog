@@ -93,9 +93,11 @@ angular.module('Virblog')
 
     $scope.save = function () {
       $scope.post.tags = [];
-      $scope.post._tags.forEach(function (tag) {
-        $scope.post.tags.push(tag.text);
-      });
+      if ($scope.post.postType == 'Post') {
+        $scope.post._tags.forEach(function (tag) {
+          $scope.post.tags.push(tag.text);
+        });
+      }
       var method = $scope.new ? $http.post : $http.put;
       method('/api/v1/posts', $scope.post).success(function () {
         notify({

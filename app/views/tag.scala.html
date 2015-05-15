@@ -34,7 +34,7 @@
         @if(postCount > pageNumber * Options.pageSize) {
             <li class="next">
                 <a href="?page=@{
-                    pageNumber - 1
+                    pageNumber + 1
                 }">@Messages("pagination.next") &rarr;</a>
             </li>
         }

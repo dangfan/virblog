@@ -23,6 +23,7 @@ object Options {
   private var privateDatetimeFormat: Map[String, String] = null
   private var privateDefaultLocale: String = null
   private var privatePageSize: Int = 10
+  private var privateDisqusShortName: String = ""
 
 
   def load()(implicit ec: ExecutionContext) = {
@@ -33,6 +34,7 @@ object Options {
       case ("datetime_format", map) => privateDatetimeFormat = map
       case ("default_locale", map) => privateDefaultLocale = map("value")
       case ("page_size", map) => privatePageSize = map("value").toInt
+      case ("disqus_short_name", map) => privateDisqusShortName = map("value")
     })
   }
 
@@ -42,6 +44,7 @@ object Options {
   def datetimeFormat = privateDatetimeFormat
   def defaultLocale = privateDefaultLocale
   def pageSize = privatePageSize
+  def disqusShortName = privateDisqusShortName
 
   def blogName_=(map: Map[String, String]) = {
     privateBlogName = map
@@ -72,4 +75,10 @@ object Options {
     privatePageSize = value
     db.run(options.filter(_.name === "page_size").map(_.value).update(Map("value" -> value.toString)))
   }
+
+  def disqusShortName_=(value: String) = {
+    privateDisqusShortName = value
+    db.run(options.filter(_.name === "disqus_short_name").map(_.value).update(Map("value" -> value)))
+  }
+
 }
