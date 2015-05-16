@@ -24,7 +24,7 @@ object Application extends Controller {
 
   def post(lang: String, slug: String) = LocalizedAsyncAction(lang) { implicit request =>
     val post = for {
-      post <- Posts.getBySlug(slug) if post.postType == PostTypes.Post && post.status == PostStatuses.Published
+      post <- Posts.getBySlug(slug) if post.postType == PostTypes.Post
       tags <- PostTags.getBySlugs(post.tags)
     } yield Ok(views.html.post(post, tags))
     post.recover { case _ => NotFound(views.html.notFound()) }
@@ -32,16 +32,20 @@ object Application extends Controller {
 
   def page(lang: String, slug: String) = LocalizedAsyncAction(lang) { implicit request =>
     val post = for {
-      post <- Posts.getBySlug(slug) if post.postType == PostTypes.Page && post.status == PostStatuses.Published
+      post <- Posts.getBySlug(slug) if post.postType == PostTypes.Page
     } yield Ok(views.html.page(post))
     post.recover { case _ => NotFound(views.html.notFound()) }
   }
 
   def tag(lang: String, slug: String, page: Int) = LocalizedAsyncAction(lang) { implicit request =>
-    for {
-      (posts, postCount) <- Posts.listByTag(slug, if (page < 0) 1 else page)
-      tag <- PostTags.getBySlug(slug)
-    } yield Ok(views.html.tag(tag, posts, page, postCount))
+    if (page <= 0) {
+      Future(Redirect(routes.Application.tag(lang, slug, 1)))
+    } else {
+      for {
+        (posts, postCount) <- Posts.listByTag(slug, if (page < 0) 1 else page)
+        tag <- PostTags.getBySlug(slug)
+      } yield Ok(views.html.tag(tag, posts, page, postCount))
+    }
   }
 
   def chooseLanguage = Action.async { implicit request =>
@@ -55,9 +59,17 @@ object Application extends Controller {
       }
     }.find(_.isDefined).flatten match {
       case Some(code) => Future(Redirect(routes.Application.index(code)))
-      case _ => IpUtils.getLangCode(request.remoteAddress).map { code =>
-        Redirect(routes.Application.index(code))
-      }
+      case _ =>
+        request.headers.get("CF-IPCountry") match {
+          case Some(country) => IpUtils.getLangCodeByCountry(country.toLowerCase).map { code =>
+            Redirect(routes.Application.index(code))
+          }
+          case _ =>
+            val ip = request.headers.get("X-Real-IP").getOrElse(request.remoteAddress)
+            IpUtils.getLangCodeByIp(ip).map { code =>
+              Redirect(routes.Application.index(code))
+            }
+        }
     }
   }
 

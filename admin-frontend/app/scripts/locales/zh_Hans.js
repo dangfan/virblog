@@ -16,7 +16,8 @@ var ZH_HANS = {
     SETTINGS: '设置',
     EDIT: '编辑',
     TAGS: '标签',
-    USERS: '用户'
+    USERS: '用户',
+    BLOGROLLS: '友情链接'
   },
   posts: {
     PUBLISHED: '已发布',
@@ -75,5 +76,9 @@ var ZH_HANS = {
     CANCEL: '取消',
     TWO_NOT_MATCH: '两次输入不匹配',
     OLD_NOT_MATCH: '旧密码错误'
+  },
+  blogrolls: {
+    NAME: '名称',
+    LINK: '链接'
   }
 };

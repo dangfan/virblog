@@ -14,4 +14,5 @@ tag = Tag:
 pagination.prev = Newer Posts
 pagination.next = Older Posts
 
+main.blogrolls = Blogrolls
 main.copyright = Copyright © 2012 - 2015 DANG Fan

@@ -141,6 +141,22 @@
         </div>
 
         <div class="form-group">
+          <label class="col-sm-2 control-label">CNZZ ID</label>
+
+          <div class="col-sm-10">
+            <input class="form-control" ng-model="settings.cnzz_id">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">GA ID</label>
+
+          <div class="col-sm-10">
+            <input class="form-control" ng-model="settings.ga_id">
+          </div>
+        </div>
+
+        <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <button class="btn btn-info btn-sm btn-outline btn-rounded" ng-click="save()">{{'settings.SAVE' | translate}}</button>
           </div>

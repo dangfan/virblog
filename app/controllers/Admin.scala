@@ -1,6 +1,7 @@
 package controllers
 
 import controllers.Actions._
+import models.Blogrolls._
 import models.PostTags._
 import models.Posts._
 import models._
@@ -21,7 +22,9 @@ case class OptionInfo(blogName: Map[String, String],
                       datetimeFormat: Map[String, String],
                       defaultLocale: String,
                       pageSize: Int,
-                      disqusShortName: String)
+                      disqusShortName: String,
+                      cnzzId: String,
+                      gaId: String)
 
 object Admin extends Controller {
   implicit val loginInfoReads: Reads[LoginInfo] = (
@@ -36,7 +39,9 @@ object Admin extends Controller {
     (JsPath \ "datetime_format").read[Map[String, String]] and
     (JsPath \ "default_locale").read[String] and
     (JsPath \ "page_size").read[Int] and
-    (JsPath \ "disqus_short_name").read[String]
+    (JsPath \ "disqus_short_name").read[String] and
+    (JsPath \ "cnzz_id").read[String] and
+    (JsPath \ "ga_id").read[String]
   )(OptionInfo.apply _)
 
   implicit val optionInfoWrites: Writes[OptionInfo] = (
@@ -46,7 +51,9 @@ object Admin extends Controller {
     (JsPath \ "datetime_format").write[Map[String, String]] and
     (JsPath \ "default_locale").write[String] and
     (JsPath \ "page_size").write[Int] and
-    (JsPath \ "disqus_short_name").write[String]
+    (JsPath \ "disqus_short_name").write[String] and
+    (JsPath \ "cnzz_id").write[String] and
+    (JsPath \ "ga_id").write[String]
   )(unlift(OptionInfo.unapply))
 
   val unauthorizedResult = Unauthorized(Json.obj(
@@ -102,8 +109,8 @@ object Admin extends Controller {
     val tagResult = request.body.validate[List[PostTag]]
     tagResult.fold(
       errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      tags => PostTags.clear.flatMap { line =>
-        Future.sequence(tags.map(PostTags.insert)).map { line => ok }.recover {
+      tags => PostTags.clear.flatMap { _ =>
+        Future.sequence(tags.map(PostTags.insert)).map { _ => ok }.recover {
           case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
         }
       }.recover {
@@ -157,7 +164,8 @@ object Admin extends Controller {
 
   def getOptions = AuthenticatedAsyncAction { request =>
     val optionInfo = OptionInfo(Options.blogName, Options.blogDescription, Options.locales,
-      Options.datetimeFormat, Options.defaultLocale, Options.pageSize, Options.disqusShortName)
+      Options.datetimeFormat, Options.defaultLocale, Options.pageSize, Options.disqusShortName,
+      Options.cnzzId, Options.gaId)
     Future(Ok(Json.toJson(optionInfo)))
   }
 
@@ -173,6 +181,8 @@ object Admin extends Controller {
         Options.defaultLocale = options.defaultLocale
         Options.pageSize = options.pageSize
         Options.disqusShortName = options.disqusShortName
+        Options.cnzzId = options.cnzzId
+        Options.gaId = options.gaId
         Future(ok)
       }
     )
@@ -192,5 +202,23 @@ object Admin extends Controller {
     Users.update(User(request.user.username, "", Some(email), Some(nickname), None, None)).map { _ =>
       ok
     }
+  }
+
+  def blogrolls = AuthenticatedAsyncAction { request =>
+    Future(Ok(Json.toJson(Blogrolls.all)))
+  }
+
+  def updateBlogrolls = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
+    val blogrollResult = request.body.validate[List[Blogroll]]
+    blogrollResult.fold(
+      errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
+      blogrolls => Blogrolls.clear.flatMap { _ =>
+        Blogrolls.insertAll(blogrolls).map { _ => ok }.recover {
+          case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+        }
+      }.recover {
+        case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+      }
+    )
   }
 }

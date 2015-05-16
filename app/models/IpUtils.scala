@@ -32,11 +32,16 @@ object IpUtils {
     BigDecimal(BigInt(1, ia.getAddress))
   }
 
-  def getLangCode(ip: String): Future[String] = {
+  def getLangCodeByIp(ip: String): Future[String] = {
     val q = (for {
       i <- ip2Countries.sortBy(_.ip) if i.ip >= ipToDecimal(ip)
       c <- country2Languages if i.country === c.code
     } yield c.lang_code).take(1)
+    db.run(q.result.head)
+  }
+
+  def getLangCodeByCountry(country: String): Future[String] = {
+    val q = country2Languages.filter(_.code === country).map(_.lang_code)
     db.run(q.result.head)
   }
 

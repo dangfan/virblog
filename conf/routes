@@ -25,6 +25,8 @@ PUT           /api/v1/options                      controllers.Admin.updateOptio
 POST          /api/v1/i18n/zhs2zht                 controllers.I18n.zhs2Zht
 PUT           /api/v1/users/update-password        controllers.Admin.updatePassword
 PUT           /api/v1/users/update                 controllers.Admin.updateUser
+GET           /api/v1/blogrolls                    controllers.Admin.blogrolls
+POST          /api/v1/blogrolls                    controllers.Admin.updateBlogrolls
 
 # For old website migration
 GET           /:lang/blog/:slug                    controllers.Application.migrate(lang: String, slug: String)

@@ -14,6 +14,7 @@ object Global extends GlobalSettings {
   override def onStart(app: Application) = {
     DAO.db = Database.forConfig("database")
     Options.load()
+    Blogrolls.load()
 
     Users.count.map { count =>
       if (count == 0) {

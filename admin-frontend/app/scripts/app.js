@@ -72,6 +72,12 @@ angular.module('Virblog', ['ui.router', 'ngAnimate', 'pascalprecht.translate',
         templateUrl: 'views/dashboard/users.html',
         controller: 'UsersCtrl',
         title: 'nav.USERS'
+      })
+      .state('dashboard.blogrolls', {
+        url: '/blogrolls',
+        templateUrl: 'views/dashboard/blogrolls.html',
+        controller: 'BlogrollsCtrl',
+        title: 'nav.BLOGROLLS'
       });
 
   }).config(['$translateProvider', function ($translateProvider) {

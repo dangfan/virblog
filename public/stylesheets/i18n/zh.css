@@ -96,4 +96,5 @@ blockquote {
 
 i.fa:lang(zh-Hans), i.fa:lang(zh-Hant) {
     font-family: FontAwesome;
+    border-bottom: none;
 }

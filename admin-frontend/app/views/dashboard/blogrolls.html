@@ -1,0 +1,34 @@
+<div>
+  <h2>{{'nav.BLOGROLLS' | translate}}</h2>
+
+  <div class="jumbotron">
+    <table st-table="blogrolls" class="table">
+      <thead>
+      <tr>
+        <th>{{'blogrolls.NAME' | translate}}</th>
+        <th>{{'blogrolls.LINK' | translate}}</th>
+        <th>{{'settings.DELETE' | translate}}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="blogroll in blogrolls">
+        <td><input class="form-control" ng-model="blogroll.name"></td>
+        <td><input class="form-control" ng-model="blogroll.link"></td>
+        <td>
+          <button type="button" ng-click="remove($index)" class="btn btn-danger btn-sm btn-rounded">
+            <i class="glyphicon glyphicon-remove"></i>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="row">
+      <div class="col-sm-offset-1 col-sm-1">
+        <button class="btn btn-outline btn-rounded btn-info" ng-click="add()">{{'tags.ADD' | translate}}</button>
+      </div>
+      <div class="col-sm-offset-2">
+        <button class="btn btn-outline btn-rounded btn-info" ng-click="save()">{{'settings.SAVE' | translate}}</button>
+      </div>
+    </div>
+  </div>
+</div>

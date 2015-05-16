@@ -16,9 +16,13 @@ object Actions {
 
   def LocalizedAsyncAction(lang: String)(f: LocalizedRequest => Future[Result])(implicit ec: ExecutionContext) = {
     Action.async { request =>
-      val ip = request.headers.get("X-Real-IP").getOrElse(request.remoteAddress)
-      IpUtils.getCountry(ip).flatMap { country =>
-        f(LocalizedRequest(lang, country, request))
+      request.headers.get("CF-IPCountry") match {
+        case Some(country) => f(LocalizedRequest(lang, country.toLowerCase, request))
+        case _ =>
+          val ip = request.headers.get("X-Real-IP").getOrElse(request.remoteAddress)
+          IpUtils.getCountry(ip).flatMap { country =>
+            f(LocalizedRequest(lang, country, request))
+          }
       }
     }
   }

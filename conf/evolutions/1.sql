@@ -19,6 +19,8 @@ INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('datetime_format', '"en"=>"MMMM 
 INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('default_locale', '"value"=>"en"');
 INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('page_size', '"value"=>"5"');
 INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('disqus_short_name', '"value"=>""');
+INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('cnzz_id', '"value"=>""');
+INSERT INTO "OPTIONS" ("NAME", "VALUE") VALUES ('ga_id', '"value"=>""');
 
 DROP TABLE IF EXISTS "POST_TAGS";
 CREATE TABLE "POST_TAGS" (
@@ -52,4 +54,10 @@ CREATE TABLE "USERS" (
   "NICKNAME" VARCHAR(64),
   "SESSION_ID" VARCHAR(36),
   "EXPIRE" TIMESTAMP
+);
+
+DROP TABLE IF EXISTS "BLOGROLLS";
+CREATE TABLE "BLOGROLLS" (
+  "NAME" VARCHAR(64),
+  "LINK" VARCHAR(64)
 );

@@ -17,13 +17,15 @@ object Options {
   private val options = TableQuery[Options]
   private val db = DAO.db
 
-  private var privateBlogName: Map[String, String] = null
-  private var privateBlogDescription: Map[String, String] = null
-  private var privateLocales: Map[String, String] = null
-  private var privateDatetimeFormat: Map[String, String] = null
-  private var privateDefaultLocale: String = null
+  private var privateBlogName: Map[String, String] = Map()
+  private var privateBlogDescription: Map[String, String] = Map()
+  private var privateLocales: Map[String, String] = Map()
+  private var privateDatetimeFormat: Map[String, String] = Map()
+  private var privateDefaultLocale: String = ""
   private var privatePageSize: Int = 10
   private var privateDisqusShortName: String = ""
+  private var privateCnzzId = ""
+  private var privateGoogleAnalyticsId = ""
 
 
   def load()(implicit ec: ExecutionContext) = {
@@ -35,6 +37,8 @@ object Options {
       case ("default_locale", map) => privateDefaultLocale = map("value")
       case ("page_size", map) => privatePageSize = map("value").toInt
       case ("disqus_short_name", map) => privateDisqusShortName = map("value")
+      case ("cnzz_id", map) => privateCnzzId = map("value")
+      case ("ga_id", map) => privateGoogleAnalyticsId = map("value")
     })
   }
 
@@ -45,6 +49,8 @@ object Options {
   def defaultLocale = privateDefaultLocale
   def pageSize = privatePageSize
   def disqusShortName = privateDisqusShortName
+  def cnzzId = privateCnzzId
+  def gaId = privateGoogleAnalyticsId
 
   def blogName_=(map: Map[String, String]) = {
     privateBlogName = map
@@ -79,6 +85,16 @@ object Options {
   def disqusShortName_=(value: String) = {
     privateDisqusShortName = value
     db.run(options.filter(_.name === "disqus_short_name").map(_.value).update(Map("value" -> value)))
+  }
+
+  def cnzzId_=(value: String) = {
+    privateCnzzId = value
+    db.run(options.filter(_.name === "cnzz_id").map(_.value).update(Map("value" -> value)))
+  }
+
+  def gaId_=(value: String) = {
+    privateGoogleAnalyticsId = value
+    db.run(options.filter(_.name === "ga_id").map(_.value).update(Map("value" -> value)))
   }
 
 }
