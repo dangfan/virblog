@@ -1,3 +1,5 @@
+@import "../han.min.css";
+
 article > p:lang(zh-Hant),
 article > ul:lang(zh-Hant),
 article > ol:lang(zh-Hant) {
@@ -18,7 +20,7 @@ article p, article ul, article ol {
     margin: 0;
 }
 
-article ul, article ol {
+article ol {
     list-style-position: inside;
 }
 

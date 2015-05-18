@@ -29,7 +29,7 @@ angular.module('Virblog')
     };
 
     $scope.setDefaultLocale = function (code) {
-      $scope.settings['default_locale'] = code
+      $scope.settings.defaultLocale = code
     };
 
     $scope.removeLocale = function (index) {
@@ -41,14 +41,14 @@ angular.module('Virblog')
       $scope.locales.forEach(function (item) {
         $scope.settings.locales[item.code] = item.name;
 
-        $scope.settings['blog_name'][item.code] =
-          $scope.settings['blog_name'][item.code] || '';
+        $scope.settings.blogName[item.code] =
+          $scope.settings.blogName[item.code] || '';
 
-        $scope.settings['blog_description'][item.code] =
-          $scope.settings['blog_description'][item.code] || '';
+        $scope.settings.blogDescription[item.code] =
+          $scope.settings.blogDescription[item.code] || '';
 
-        $scope.settings['datetime_format'][item.code] =
-          $scope.settings['datetime_format'][item.code] || '';
+        $scope.settings.datetimeFormat[item.code] =
+          $scope.settings.datetimeFormat[item.code] || '';
       });
       $scope.save();
     };

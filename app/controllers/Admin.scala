@@ -6,7 +6,6 @@ import models.PostTags._
 import models.Posts._
 import models._
 import models.enums._
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.mvc._
 
@@ -27,34 +26,11 @@ case class OptionInfo(blogName: Map[String, String],
                       gaId: String)
 
 object Admin extends Controller {
-  implicit val loginInfoReads: Reads[LoginInfo] = (
-    (JsPath \ "username").read[String] and
-    (JsPath \ "password").read[String]
-  )(LoginInfo.apply _)
+  implicit val loginInfoReads = Json.reads[LoginInfo]
 
-  implicit val optionInfoReads: Reads[OptionInfo] = (
-    (JsPath \ "blog_name").read[Map[String, String]] and
-    (JsPath \ "blog_description").read[Map[String, String]] and
-    (JsPath \ "locales").read[Map[String, String]] and
-    (JsPath \ "datetime_format").read[Map[String, String]] and
-    (JsPath \ "default_locale").read[String] and
-    (JsPath \ "page_size").read[Int] and
-    (JsPath \ "disqus_short_name").read[String] and
-    (JsPath \ "cnzz_id").read[String] and
-    (JsPath \ "ga_id").read[String]
-  )(OptionInfo.apply _)
+  implicit val optionInfoReads = Json.reads[OptionInfo]
 
-  implicit val optionInfoWrites: Writes[OptionInfo] = (
-    (JsPath \ "blog_name").write[Map[String, String]] and
-    (JsPath \ "blog_description").write[Map[String, String]] and
-    (JsPath \ "locales").write[Map[String, String]] and
-    (JsPath \ "datetime_format").write[Map[String, String]] and
-    (JsPath \ "default_locale").write[String] and
-    (JsPath \ "page_size").write[Int] and
-    (JsPath \ "disqus_short_name").write[String] and
-    (JsPath \ "cnzz_id").write[String] and
-    (JsPath \ "ga_id").write[String]
-  )(unlift(OptionInfo.unapply))
+  implicit val optionInfoWrites = Json.writes[OptionInfo]
 
   val unauthorizedResult = Unauthorized(Json.obj(
     "status" -> "err",

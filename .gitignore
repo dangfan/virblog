@@ -6,6 +6,7 @@ tmp
 .history
 dist
 /.idea
+/admin-frontend/.idea
 /*.iml
 /out
 /.idea_modules
