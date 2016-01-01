@@ -28,7 +28,7 @@ object Global extends GlobalSettings {
   }
 
   override def onHandlerNotFound(request: RequestHeader) = {
-    val url = """[\w-]+""".r
+    val url = """(zh-Hans|zh-Hant|en)""".r
     val lang = url.findFirstIn(request.path).getOrElse(Options.defaultLocale)
     val localizedRequest = LocalizedRequest(lang, "", Request[AnyContent](request, AnyContentAsEmpty))
     Future.successful(NotFound(views.html.notFound()(localizedRequest)))

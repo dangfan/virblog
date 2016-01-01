@@ -2,10 +2,10 @@
 
 # Blog pages
 GET           /                                    controllers.Application.chooseLanguage
-GET           /:lang/                              controllers.Application.index(lang: String, page: Int ?= 1)
-GET           /:lang/posts/:slug                   controllers.Application.post(lang: String, slug: String)
-GET           /:lang/pages/:slug                   controllers.Application.page(lang: String, slug: String)
-GET           /:lang/tags/:slug                    controllers.Application.tag(lang: String, slug: String, page: Int ?= 1)
+GET           /$lang<[a-zA-Z\-]{2,7}>/             controllers.Application.index(lang: String, page: Int ?= 1)
+GET           /$lang<[a-zA-Z\-]{2,7}>/posts/:slug  controllers.Application.post(lang: String, slug: String)
+GET           /$lang<[a-zA-Z\-]{2,7}>/pages/:slug  controllers.Application.page(lang: String, slug: String)
+GET           /$lang<[a-zA-Z\-]{2,7}>/tags/:slug   controllers.Application.tag(lang: String, slug: String, page: Int ?= 1)
 
 # Admin APIs
 POST          /api/v1/login                        controllers.Admin.login
@@ -29,7 +29,7 @@ GET           /api/v1/blogrolls                    controllers.Admin.blogrolls
 POST          /api/v1/blogrolls                    controllers.Admin.updateBlogrolls
 
 # For old website migration
-GET           /:lang/blog/:slug                    controllers.Application.migrate(lang: String, slug: String)
+GET           /$lang<.{2,3}>/blog/:slug            controllers.Application.migrate(lang: String, slug: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                        controllers.Assets.at(path="/public", file)
