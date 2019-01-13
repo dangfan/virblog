@@ -1,79 +1,60 @@
-@(title: String, headerImg: String)(heading: Html)(content: Html)(implicit request: controllers.LocalizedRequest)
+@(title: String, headerImg: String)(heading: Html)(content: Html)(implicit request: LocalizedRequest[AnyContent], messagesApi: MessagesApi)
 @import controllers.Implicits._
+@import dao.{Blogroll, Options}
 
 <!DOCTYPE html>
-<html lang="@request.lang" @if(request.lang.startsWith("zh")) {
-    class="han-init"}>
+<html lang="@request.lang" class="han-init">
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>@title</title>
-        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
-        <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="@routes.Assets.at("stylesheets/bootstrap.min.css")" rel="stylesheet">
+        <link href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" rel="stylesheet">
+        <link href="https://fonts.loli.net/css?family=Lora:400,700,400italic,700italic" rel="stylesheet">
+        <link href="https://fonts.loli.net/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet">
         <link href="@routes.Assets.at("stylesheets/main.css")" rel="stylesheet">
-        @if(!request.lang.startsWith("zh")) {
-            @if(request.country == "cn") {
-                <link href="//gfonts.dangfan.me/css?family=Lora:400,700,400italic,700italic" rel="stylesheet">
-                <link href="//gfonts.dangfan.me/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet">
-            } else {
-                <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet">
-                <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet">
-            }
-        }
         <link href="@routes.Assets.at("stylesheets/i18n/" + Utils.getMainLang(request.lang) + ".css")" rel="stylesheet">
-        <!--[if lt IE 9]>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
-        <![endif]-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/styles/default.min.css" rel="stylesheet">
     </head>
     <body>
-        <nav class="navbar navbar-default navbar-custom fixed-top">
-            <div class="container-fluid">
-                <div class="navbar-header page-scroll">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                </div>
-                <div class="collapse navbar-collapse" id="navbar-collapse">
-                    <ul class="nav navbar-nav navbar-left">
-                        <li>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container">
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="fas fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
                             <a href="@routes.Application.index(request.lang)">@Messages("nav.home")</a>
                         </li>
-                        <li>
-                            <a href="" class="dropdown-toggle" data-toggle="dropdown">@Messages("nav.language")</a>
-                            <ul class="dropdown-menu" role="menu">
-                            @for((id, name) <- Options.locales) {
-                                <li role="presentation">
-                                    <a role="menuitem" tabindex="-1" href="@Utils.getNewLocalizedUrl(id)">
-                                    @name
-                                    </a>
-                                </li>
-                            }
-                            </ul>
-                        </li>
-                        <li>
+                        <li class="nav-item">
                             <a href="@routes.Application.page(request.lang, "about")">@Messages("nav.about")</a>
                         </li>
+                    </ul>
+                    <hr>
+                    <ul class="navbar-nav ml-auto">
+                    @for((id, name) <- Options.locales) {
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Utils.getNewLocalizedUrl(id)">@name</a>
+                        </li>
+                    }
                     </ul>
                 </div>
             </div>
         </nav>
-        <header class="intro-header" style="background-image: url(@if(headerImg != ""){@headerImg}else{//dn-dangfan.qbox.me/home-bg.jpg})">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                @heading
+        <header class="masthead" style="background-image: url(@if(headerImg != ""){@headerImg}else{//img.nfc.im/home-bg.jpg})">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                    @heading
+                    </div>
                 </div>
             </div>
-        </div>
         </header>
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="col-lg-8 col-md-10 mx-auto">
                 @content
                 </div>
             </div>
@@ -81,66 +62,40 @@
         <hr>
         <footer>
             <div class="container">
-                @if(Blogrolls.all.length > 0) {
-                    <div class="row">
-                        <div class="col-lg-8 col-lg-offset-2 col-sm-10 col-sm-offset-1">
-                        @for((blogrolls, index) <- (0 until 3).map { i => Blogrolls.all.drop(i).sliding(1, 3).flatten }.zipWithIndex) {
-                            <div class="col-sm-4">
-                                @if(index == 0) {
-                                    <h4>@Messages("main.blogrolls")</h4>
-                                } else {
-                                    <h4 class="hidden-xs">&nbsp;</h4>
-                                }
-                            <ul class="blogroll">
-                            @for(blogroll <- blogrolls) {
-                                <li><a href="@blogroll.link" target="_blank">@blogroll.name</a></li>
+                <div class="row">
+                    <div class="col-lg-8 col-md-10 mx-auto">
+                        <h4>@Messages("main.blogrolls")</h4>
+                        <ul class="blogroll row">
+                            @for(blogroll <- Blogroll.all) {
+                                <li class="col-sm-4"><a href="@blogroll.link" target="_blank">@blogroll.name</a></li>
                             }
-                            </ul>
-                            </div>
-                        }
-                        </div>
+                        </ul>
                     </div>
-                }
+                </div>
                 <div class="row socials">
-                    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="col-lg-8 col-md-10 mx-auto">
                         <ul class="list-inline text-center">
-                            <li>
-                                <a href="https://twitter.com/terro1991">
+                            <li class="list-inline-item">
+                                <a href="https://www.linkedin.com/in/dangfan/" target="_blank">
                                     <span class="fa-stack fa-lg">
-                                        <i class="fa fa-circle fa-stack-2x"></i>
-                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                        <span class="fas fa-circle fa-stack-2x"></span>
+                                        <span class="fab fa-linkedin fa-stack-1x fa-inverse"></span>
                                     </span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://www.facebook.com/dangfan">
+                            <li class="list-inline-item">
+                                <a href="https://facebook.com/dangfan" target="_blank">
                                     <span class="fa-stack fa-lg">
-                                        <i class="fa fa-circle fa-stack-2x"></i>
-                                        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                                        <span class="fas fa-circle fa-stack-2x"></span>
+                                        <span class="fab fa-facebook-f fa-stack-1x fa-inverse"></span>
                                     </span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="https://github.com/terro">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dangfan" target="_blank">
                                     <span class="fa-stack fa-lg">
-                                        <i class="fa fa-circle fa-stack-2x"></i>
-                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="http://cn.linkedin.com/in/dangfan">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fa fa-circle fa-stack-2x"></i>
-                                        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="http://weibo.com/dangfan">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fa fa-circle fa-stack-2x"></i>
-                                        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                                        <span class="fas fa-circle fa-stack-2x"></span>
+                                        <span class="fab fa-github fa-stack-1x fa-inverse"></span>
                                     </span>
                                 </a>
                             </li>
@@ -150,39 +105,21 @@
                 </div>
             </div>
         </footer>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.13.1/highlight.min.js"></script>
         <script>
             $('p:has(img)').css('text-align', 'center');
+            hljs.initHighlightingOnLoad();
         </script>
         @if(request.lang.startsWith("zh")) {
             <script>
                 $('p:has(img)').css('text-indent', '0');
             </script>
-            <script src="//fonts.dangfan.me/?family=beiwei&s=h1"></script>
-            <script src="//fonts.dangfan.me/?family=beiwei&s=.subheading"></script>
-            <script src="@routes.Assets.at("javascripts/han.min.js")"></script>
+            <script src="https://fonts.dangfan.me/?family=beiwei&s=h1" async></script>
+            <script src="https://fonts.dangfan.me/?family=beiwei&s=.subheading" async></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/Han/3.2.7/han.min.js"></script>
         }
-        <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/styles/github.min.css" rel="stylesheet">
-        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.5/highlight.min.js"></script>
-        <script>
-            hljs.initHighlightingOnLoad();
-        </script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.5.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.4/js/bootstrap.min.js"></script>
-        @if(!Options.cnzzId.isEmpty) {
-            <div style="display : none">
-                <script src="//s11.cnzz.com/z_stat.php?id=@Options.cnzzId"></script>
-            </div>
-        }
-        @if(!Options.gaId.isEmpty) {
-            <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-            ga('create', '@Options.gaId', 'auto');
-            ga('send', 'pageview');
-            </script>
-        }
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.min.js" async></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
     </body>
 </html>

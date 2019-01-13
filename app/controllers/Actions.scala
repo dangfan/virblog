@@ -1,45 +1,45 @@
 package controllers
 
+import com.google.inject.Inject
+import dao.Options
 import models._
+import play.api.libs.json.Json
 import play.api.mvc._
 
 import scala.concurrent._
 
-case class LocalizedRequest(lang: String, country: String, request: Request[AnyContent])
-  extends WrappedRequest(request)
+class LocalizedRequest[A](val lang: String, request: Request[A]) extends WrappedRequest[A](request)
 
-case class AuthenticatedRequest[A](user: User, request: Request[A])
-  extends WrappedRequest(request)
+class AuthenticatedRequest[A](val user: UserEntity, request: Request[A]) extends WrappedRequest(request)
 
+class LocalizedAction @Inject()(val parser: BodyParsers.Default)
+                               (implicit val executionContext: ExecutionContext)
+  extends ActionBuilder[LocalizedRequest, AnyContent] {
+  def invokeBlock[A](request: Request[A], block: LocalizedRequest[A] => Future[Result]): Future[Result] = {
+    val url = """/([\w-]+)/.*""".r
+    val lang = request.uri match {
+      case url(l, _*) => l
+      case _ => Options.defaultLocale
+    }
+    block(new LocalizedRequest(lang, request))
+  }
+}
 
-object Actions {
+class AuthenticatedAction @Inject()(val parser: BodyParsers.Default,
+                                    userDao: dao.User)
+                                   (implicit val executionContext: ExecutionContext)
+  extends ActionBuilder[AuthenticatedRequest, AnyContent] with Results {
 
-  def LocalizedAsyncAction(lang: String)(f: LocalizedRequest => Future[Result])(implicit ec: ExecutionContext) = {
-    Action.async { request =>
-      request.headers.get("CF-IPCountry") match {
-        case Some(country) => f(LocalizedRequest(lang, country.toLowerCase, request))
-        case _ =>
-          val ip = request.headers.get("X-Real-IP").getOrElse(request.remoteAddress)
-          IpUtils.getCountry(ip).flatMap { country =>
-            f(LocalizedRequest(lang, country, request))
-          }
+  val unauthorizedResult: Result = Unauthorized(Json.obj(
+    "status" -> "err",
+    "message" -> "Invalid username and password"))
+
+  def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
+    request.session.get("token") map { token =>
+      userDao.getUser(token) flatMap {
+        case Some(user) => block(new AuthenticatedRequest(user, request))
+        case _ => Future.successful(unauthorizedResult)
       }
-    }
+    } getOrElse Future.successful(unauthorizedResult)
   }
-
-  def AuthenticatedAsyncAction[A](bodyParser: play.api.mvc.BodyParser[A])(f: AuthenticatedRequest[A] => Future[Result])(implicit ec: ExecutionContext) = {
-    Action.async(bodyParser) { request =>
-      request.session.get("sid").map { sid =>
-        Users.getUser(sid).flatMap {
-          case Some(user) => f(AuthenticatedRequest(user, request))
-          case _ => Future(Admin.unauthorizedResult)
-        }
-      }.getOrElse(Future(Admin.unauthorizedResult))
-    }
-  }
-
-  def AuthenticatedAsyncAction(f: AuthenticatedRequest[AnyContent] => Future[Result])(implicit ec: ExecutionContext): Action[AnyContent] = {
-    AuthenticatedAsyncAction(BodyParsers.parse.default)(f)
-  }
-
 }

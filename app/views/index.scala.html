@@ -1,5 +1,6 @@
-@(posts: Seq[Post], pageNumber: Int, postCount: Int)(implicit request: controllers.LocalizedRequest)
+@(posts: Seq[PostEntity], pageNumber: Int, postCount: Int)(implicit request: LocalizedRequest[AnyContent], messagesApi: MessagesApi)
 @import controllers.Implicits._
+@import dao.Options
 
 @main(Options.blogName.localize, "") {
     <div class="site-heading">
@@ -22,20 +23,16 @@
             </article>
         </div>
     }
-    <ul class="pager">
-        @if(pageNumber > 1) {
-            <li class="prev">
-                <a href="?page=@{
-                    pageNumber - 1
-                }">@Messages("pagination.prev") &larr;</a>
-            </li>
-        }
-        @if(postCount > pageNumber * Options.pageSize) {
-            <li class="next">
-                <a href="?page=@{
-                    pageNumber + 1
-                }">@Messages("pagination.next") &rarr;</a>
-            </li>
-        }
+    <ul class="pagination justify-content-between">
+        <li>
+            @if(pageNumber > 1) {
+                <a class="page-link" href="?page=@{pageNumber - 1}">@Messages("pagination.prev") &larr;</a>
+            }
+        </li>
+        <li>
+            @if(postCount > pageNumber * Options.pageSize) {
+                <a class="page-link" href="?page=@{pageNumber + 1}">@Messages("pagination.next") &rarr;</a>
+            }
+        </li>
     </ul>
 }

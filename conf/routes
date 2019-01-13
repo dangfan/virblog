@@ -28,8 +28,5 @@ PUT           /api/v1/users/update                 controllers.Admin.updateUser
 GET           /api/v1/blogrolls                    controllers.Admin.blogrolls
 POST          /api/v1/blogrolls                    controllers.Admin.updateBlogrolls
 
-# For old website migration
-GET           /$lang<.{2,3}>/blog/:slug            controllers.Application.migrate(lang: String, slug: String)
-
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                        controllers.Assets.at(path="/public", file)
+GET           /assets/*file                        controllers.Assets.at(file)

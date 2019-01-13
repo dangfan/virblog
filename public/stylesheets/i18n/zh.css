@@ -1,4 +1,8 @@
-@import "../han.min.css";
+@import url("//cdnjs.cloudflare.com/ajax/libs/Han/3.2.7/han.min.css");
+
+h-hangable:lang(zh-Hans) > h-cs h-char.bd-end {
+    line-height: 1.4;
+}
 
 article > p:lang(zh-Hant),
 article > ul:lang(zh-Hant),
@@ -25,21 +29,18 @@ article ol, article ul {
 }
 
 article ul > li {
-    text-indent: -1em;
-    padding-left: 1em;
-}
-
-article p h-cs:lang(zh-Hans),
-article ul h-cs:lang(zh-Hans),
-article ol h-cs:lang(zh-Hans) {
-    top: 0.1em;
-}
-
-article p h-char:lang(zh-Hans),
-article ul h-char:lang(zh-Hans),
-article ol h-char:lang(zh-Hans) {
+    text-indent: 1em;
+    list-style-type: none;
     position: relative;
-    top: 0.1em;
+}
+
+article ul > li:before {
+    content: "\2219";
+    font-size: 2.5em;
+    line-height: 0;
+    position: absolute;
+    top: .27em;
+    left: -.45em;
 }
 
 article h1, article h2, article h3, article h4, article h5, article h6 {
@@ -48,40 +49,8 @@ article h1, article h2, article h3, article h4, article h5, article h6 {
     border-bottom: 1px solid #dcd6ca;
 }
 
-article h1:lang(zh-Hant),
-article h2:lang(zh-Hant),
-article h3:lang(zh-Hant),
-article h4:lang(zh-Hant),
-article h5:lang(zh-Hant),
-article h6:lang(zh-Hant) {
-    font-family: "Biaodian Pro Sans CNS", "Helvetica Neue", Helvetica, Arial, "Zhuyin Heiti", "Han Heiti", sans-serif;
-}
-
-article h1:lang(zh-Hans),
-article h2:lang(zh-Hans),
-article h3:lang(zh-Hans),
-article h4:lang(zh-Hans),
-article h5:lang(zh-Hans),
-article h6:lang(zh-Hans) {
-    font-family: "Biaodian Pro Sans GB", "Helvetica Neue", Helvetica, Arial, "Han Heiti GB", sans-serif;
-}
-
-.close, .close:hover {
-    float: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    line-height: inherit;
-    color: inherit;
-    text-shadow: inherit;
-    filter: inherit;
-    opacity: inherit;
-    cursor: inherit;
-}
-
 blockquote {
     margin: 1em 4em 1em 4em !important;
-    padding: 0;
-    border: none;
 }
 
 .meta:lang(zh-Hant),
@@ -92,17 +61,4 @@ blockquote {
 .meta:lang(zh-Hans),
 .post-meta:lang(zh-Hans) {
     font-family: "Biaodian Pro Serif GB", "Numeral LF Serif", Georgia, "Times New Roman", "Han Kaiti GB", cursive, serif;
-}
-
-.post-tags:lang(zh-Hant) {
-    font-family: "Biaodian Pro Sans CNS", "Helvetica Neue", Helvetica, Arial, "Zhuyin Heiti", "Han Heiti", sans-serif;
-}
-
-.post-tags:lang(zh-Hans) {
-    font-family: "Biaodian Pro Sans GB", "Helvetica Neue", Helvetica, Arial, "Han Heiti GB", sans-serif;
-}
-
-i.fa:lang(zh-Hans), i.fa:lang(zh-Hant) {
-    font-family: FontAwesome;
-    border-bottom: none;
 }

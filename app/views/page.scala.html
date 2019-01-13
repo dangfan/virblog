@@ -1,5 +1,6 @@
-@(post: Post)(implicit request: controllers.LocalizedRequest)
+@(post: PostEntity)(implicit request: LocalizedRequest[AnyContent], messagesApi: MessagesApi)
 @import controllers.Implicits._
+@import dao.Options
 
 @main(post.title.localize + " - " + Options.blogName.localize, post.headerImage) {
     <div class="post-heading">

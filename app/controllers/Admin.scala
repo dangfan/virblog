@@ -1,16 +1,15 @@
 package controllers
 
-import controllers.Actions._
-import models.Blogrolls._
-import models.PostTags._
-import models.Posts._
+import com.google.inject.Inject
+import controllers.Admin._
+import dao.{Blogroll, Options}
 import models._
 import models.enums._
+import play.api.i18n.Langs
 import play.api.libs.json._
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 case class LoginInfo(username: String, password: String)
@@ -22,82 +21,74 @@ case class OptionInfo(blogName: Map[String, String],
                       defaultLocale: String,
                       pageSize: Int,
                       disqusShortName: String,
-                      cnzzId: String,
                       gaId: String)
 
-object Admin extends Controller {
-  implicit val loginInfoReads = Json.reads[LoginInfo]
+class Admin @Inject()(postDao: dao.Post,
+                      postTagDao: dao.PostTag,
+                      userDao: dao.User,
+                      optionsDao: dao.Options,
+                      blogrollDao: dao.Blogroll,
+                      authenticatedAction: AuthenticatedAction,
+                      langs: Langs,
+                      val controllerComponents: ControllerComponents)
+                     (implicit val ec: ExecutionContext) extends BaseController {
 
-  implicit val optionInfoReads = Json.reads[OptionInfo]
 
-  implicit val optionInfoWrites = Json.writes[OptionInfo]
-
-  val unauthorizedResult = Unauthorized(Json.obj(
+  val unauthorizedResult: Result = Unauthorized(Json.obj(
     "status" -> "err",
     "message" -> "Invalid username and password"))
 
-  val ok = Ok(Json.obj("status" -> "ok"))
+  val ok: Result = Ok(Json.obj("status" -> "ok"))
 
-  def login = Action.async(BodyParsers.parse.json) { request =>
-    val loginInfoResult = request.body.validate[LoginInfo]
-    loginInfoResult.fold(
-      errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      loginInfo => Users.login(loginInfo.username, loginInfo.password).map {
-        case Some(sessionId) => ok.withSession("sid" -> sessionId)
-        case _ => unauthorizedResult
-      }
-    )
+  def login: Action[LoginInfo] = Action.async(parse.json[LoginInfo]) { request =>
+    val loginInfo = request.body
+    userDao.login(loginInfo.username, loginInfo.password).map {
+      case Some(sessionId) => ok.withSession("sid" -> sessionId)
+      case _ => unauthorizedResult
+    }
   }
 
-  def logout = AuthenticatedAsyncAction { request =>
-    Users.logout(request.user.username)
-    Future(Redirect("/admin/"))
+  def logout: Action[AnyContent] = authenticatedAction.async { _ =>
+    Future(Redirect("/admin/").withNewSession)
   }
 
-  def getUserInfo = AuthenticatedAsyncAction { request =>
+  def getUserInfo: Action[AnyContent] = authenticatedAction.async { request =>
     val user = request.user
     Future(Ok(Json.obj("username" -> user.username, "email" -> user.email, "nickname" -> user.nickname)))
   }
 
-  def tags = AuthenticatedAsyncAction { request =>
-    PostTags.all.map { tags =>
+  def tags: Action[AnyContent] = authenticatedAction.async { _ =>
+    postTagDao.all.map { tags =>
       Ok(Json.toJson(tags))
     }
   }
 
-  def addTag = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
-    val tagResult = request.body.validate[PostTag]
-    tagResult.fold(
-      errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      tag => PostTags.insert(tag).map(line => ok).recover {
-        case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
-      }
-    )
-  }
-
-  def delTag(slug: String) = AuthenticatedAsyncAction { request =>
-    PostTags.delete(slug).map(line => ok).recover {
+  def addTag: Action[PostTagEntity] = authenticatedAction.async(parse.json[PostTagEntity]) { request =>
+    postTagDao.insert(request.body).map(_ => ok).recover {
       case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
     }
   }
 
-  def updateTags = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
-    val tagResult = request.body.validate[List[PostTag]]
-    tagResult.fold(
-      errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      tags => PostTags.clear.flatMap { _ =>
-        Future.sequence(tags.map(PostTags.insert)).map { _ => ok }.recover {
-          case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
-        }
-      }.recover {
-        case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
-      }
-    )
+  def delTag(slug: String): Action[AnyContent] = authenticatedAction.async { _ =>
+    postTagDao.delete(slug).map(_ => ok).recover {
+      case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+    }
   }
 
-  def posts(page: Int, postType: String, postStatus: String) = AuthenticatedAsyncAction { request =>
+  def updateTags: Action[Seq[PostTagEntity]] = authenticatedAction.async(parse.json[Seq[PostTagEntity]]) { request =>
+    val tags = request.body
+    postTagDao.clear.flatMap { _ =>
+      Future.sequence(tags.map(postTagDao.insert)).map { _ => ok }.recover {
+        case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+      }
+    }.recover {
+      case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+    }
+  }
+
+  def posts(page: Int, postType: String, postStatus: String): Action[AnyContent] = authenticatedAction.async { _ =>
     for {
-      (posts, postCount) <- Posts.listByPage(
+      (posts, postCount) <- postDao.listByPage(
         if (page < 0) 1 else page,
         PostTypes.withName(postType),
         PostStatuses.withName(postStatus)
@@ -105,96 +96,86 @@ object Admin extends Controller {
     } yield Ok(Json.obj("count" -> postCount, "data" -> posts))
   }
 
-  def getPost(slug: String) = AuthenticatedAsyncAction { request =>
+  def getPost(slug: String): Action[AnyContent] = authenticatedAction.async { _ =>
     val post = for {
-      post <- Posts.getBySlug(slug)
+      post <- postDao.getBySlug(slug)
     } yield Ok(Json.toJson(post))
     post.recover { case _ => NotFound(Json.obj("status" -> "err")) }
   }
 
-  def addPost = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
-    val postResult = request.body.validate[Post]
-    postResult.fold(
-      errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      post => Posts.insert(post).map(line => ok).recover {
-        case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
-      }
-    )
-  }
-
-  def delPost(slug: String) = AuthenticatedAsyncAction { request =>
-    Posts.delete(slug).map(line => ok).recover {
+  def addPost: Action[PostEntity] = authenticatedAction.async(parse.json[PostEntity]) { request =>
+    postDao.insert(request.body).map(_ => ok).recover {
       case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
     }
   }
 
-  def updatePost = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
-    val postResult = request.body.validate[Post]
-    postResult.fold(
-      errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      post => Posts.update(post).map(line => ok).recover {
-        case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
-      }
-    )
+  def delPost(slug: String): Action[AnyContent] = authenticatedAction.async { _ =>
+    postDao.delete(slug).map(_ => ok).recover {
+      case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+    }
   }
 
-  def getOptions = AuthenticatedAsyncAction { request =>
+  def updatePost: Action[PostEntity] = authenticatedAction.async(parse.json[PostEntity]) { request =>
+    postDao.update(request.body).map(_ => ok).recover {
+      case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+    }
+  }
+
+  def getOptions: Action[AnyContent] = authenticatedAction.async { _ =>
     val optionInfo = OptionInfo(Options.blogName, Options.blogDescription, Options.locales,
       Options.datetimeFormat, Options.defaultLocale, Options.pageSize, Options.disqusShortName,
-      Options.cnzzId, Options.gaId)
+      Options.gaId)
     Future(Ok(Json.toJson(optionInfo)))
   }
 
-  def updateOptions = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
-    val optionResult = request.body.validate[OptionInfo]
-    optionResult.fold(
-      errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      options => {
-        Options.blogName = options.blogName
-        Options.blogDescription = options.blogDescription
-        Options.locales = options.locales
-        Options.datetimeFormat = options.datetimeFormat
-        Options.defaultLocale = options.defaultLocale
-        Options.pageSize = options.pageSize
-        Options.disqusShortName = options.disqusShortName
-        Options.cnzzId = options.cnzzId
-        Options.gaId = options.gaId
-        Future(ok)
-      }
-    )
+  def updateOptions: Action[OptionInfo] = authenticatedAction.async(parse.json[OptionInfo]) { request =>
+    val options = request.body
+    optionsDao.setBlogName(options.blogName)
+    optionsDao.setBlogDescription(options.blogDescription)
+    optionsDao.setLocales(options.locales)
+    optionsDao.setDatetimeFormat(options.datetimeFormat)
+    optionsDao.setDefaultLocale(options.defaultLocale)
+    optionsDao.setPageSize(options.pageSize)
+    optionsDao.setDisqusShortName(options.disqusShortName)
+    optionsDao.setGAId(options.gaId)
+    Future(ok)
   }
 
-  def updatePassword = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
+  def updatePassword: Action[JsValue] = authenticatedAction.async(parse.json) { request =>
     val oldPassword = (request.body \ "old").as[String]
     val newPassword = (request.body \ "new").as[String]
-    Users.updatePassword(request.user.username, newPassword, oldPassword).map { success =>
+    userDao.updatePassword(request.user.username, newPassword, oldPassword).map { success =>
       if (success) ok else BadRequest(Json.obj("status" -> "err", "message" -> "Password not match"))
     }
   }
 
-  def updateUser = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
+  def updateUser: Action[JsValue] = authenticatedAction.async(parse.json) { request =>
     val email = (request.body \ "email").as[String]
     val nickname = (request.body \ "nickname").as[String]
-    Users.update(User(request.user.username, "", Some(email), Some(nickname), None, None)).map { _ =>
+    userDao.update(UserEntity(request.user.username, "", Some(email), Some(nickname))).map { _ =>
       ok
     }
   }
 
-  def blogrolls = AuthenticatedAsyncAction { request =>
-    Future(Ok(Json.toJson(Blogrolls.all)))
+  def blogrolls: Action[AnyContent] = authenticatedAction.async { _ =>
+    Future(Ok(Json.toJson(Blogroll.all)))
   }
 
-  def updateBlogrolls = AuthenticatedAsyncAction(BodyParsers.parse.json) { request =>
-    val blogrollResult = request.body.validate[List[Blogroll]]
-    blogrollResult.fold(
-      errors => Future(BadRequest(Json.obj("status" -> "err", "message" -> JsError.toJson(errors)))),
-      blogrolls => Blogrolls.clear.flatMap { _ =>
-        Blogrolls.insertAll(blogrolls).map { _ => ok }.recover {
-          case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
-        }
-      }.recover {
-        case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
-      }
-    )
+  def updateBlogrolls: Action[Seq[BlogrollEntity]] = authenticatedAction.async(parse.json[Seq[BlogrollEntity]]) { request =>
+    blogrollDao.reset(request.body).map(_ => ok).recover {
+      case t => BadRequest(Json.obj("status" -> "err", "message" -> t.getMessage))
+    }
   }
+}
+
+object Admin {
+  implicit val loginInfoReads: Reads[LoginInfo] = Json.reads[LoginInfo]
+  implicit val optionInfoReads: Reads[OptionInfo] = Json.reads[OptionInfo]
+  implicit val optionInfoWrites: OWrites[OptionInfo] = Json.writes[OptionInfo]
+  implicit val postTagReads: Reads[PostTagEntity] = Json.reads[PostTagEntity]
+  implicit val postTagWrites: OWrites[PostTagEntity] = Json.writes[PostTagEntity]
+  implicit val postReads: Reads[PostEntity] = Json.reads[PostEntity]
+  implicit val postWrites: OWrites[PostEntity] = Json.writes[PostEntity]
+  implicit val blogrollReads: Reads[BlogrollEntity] = Json.reads[BlogrollEntity]
+  implicit val blogrollWrites: OWrites[BlogrollEntity] = Json.writes[BlogrollEntity]
 }
