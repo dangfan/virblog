@@ -43,7 +43,7 @@ class Admin @Inject()(postDao: dao.Post,
   def login: Action[LoginInfo] = Action.async(parse.json[LoginInfo]) { request =>
     val loginInfo = request.body
     userDao.login(loginInfo.username, loginInfo.password).map {
-      case Some(sessionId) => ok.withSession("sid" -> sessionId)
+      case Some(sessionId) => ok.withSession("token" -> sessionId)
       case _ => unauthorizedResult
     }
   }

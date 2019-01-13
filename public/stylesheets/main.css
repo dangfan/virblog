@@ -464,3 +464,7 @@ pre code {
 .page-link {
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
+
+#disqus_thread {
+    margin-top: 2em;
+}

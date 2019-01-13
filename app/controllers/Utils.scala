@@ -4,6 +4,7 @@ import java.time._
 import java.time.format._
 import java.util.Locale
 
+import com.sun.jna.Pointer
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
@@ -11,6 +12,7 @@ import com.vladsch.flexmark.util.options.MutableDataSet
 import controllers.Implicits._
 import dao.Options
 import play.api.mvc.AnyContent
+import sna.Library
 
 import scala.collection.JavaConverters._
 
@@ -19,8 +21,8 @@ object Utils {
   private val mdOptions = new MutableDataSet().set(Parser.EXTENSIONS, Seq(StrikethroughExtension.create()).asJava)
   private val mdParser = Parser.builder(mdOptions).build()
   private val htmlRenderer = HtmlRenderer.builder(mdOptions).build()
-  //  private val libopencc = Library("opencc")
-  //  private val opencc = libopencc.opencc_open("s2t.json")[Pointer]
+  private val libopencc = Library("opencc")
+  private val opencc = libopencc.opencc_open("s2t.json")[Pointer]
 
   def getNewLocalizedUrl(newLang: String)(implicit request: LocalizedRequest[AnyContent]): String = {
     val url = """/([\w-]+)/.*""".r
@@ -39,10 +41,10 @@ object Utils {
     htmlRenderer.render(doc)
   }
 
-  //  def zhs2Zht(content: String): String = {
-  //    val data = content.getBytes
-  //    libopencc.opencc_convert_utf8(opencc, data, data.length)[String]
-  //  }
+  def zhs2Zht(content: String): String = {
+    val data = content.getBytes
+    libopencc.opencc_convert_utf8(opencc, data, data.length)[String]
+  }
 }
 
 final class LocalizedMap(val self: Map[String, String]) {
